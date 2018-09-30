@@ -5,7 +5,10 @@ from discord.ext.commands import Bot
 import asyncio
 
 # File Imports
-from _env import TOKEN
+import os, settings
+
+# Environmental Variables
+TOKEN = os.getenv('TOKEN')
 
 bot = commands.Bot(command_prefix='#')
 
