@@ -1,39 +1,99 @@
+#-----------------------------------------------------------------------------
+# Name:        Discord Cyberbullying Bot
+# Purpose:     To provide a streamlined process removing cyberbullying from
+#              discord using a variety of techniques
+#
+# Author:      QiLin
+# Created:     31-Sep-2018
+# Updated:     01-Oct-2018
+#-----------------------------------------------------------------------------
+
 # Discord Imports
 import discord
 from discord.ext import commands
 from discord.ext.commands import Bot
 import asyncio
+import os
 
-# File Imports
-import os, settings
-
-# Environmental Variables
+# File Setup
+import settings
 TOKEN = os.getenv('TOKEN')
 
-bot = commands.Bot(command_prefix='#')
+# -------------------------------
+# ------- Intialization ---------
+# -------------------------------
 
-@bot.event
+client = Bot('') # Initialize
+chat_filter = ["FUCK","BITCH","ASS","FUCKING","CUNT","DESPACITO","IDIOT","PATHETIC"] # Vocabulary
+print("Starting up...") # Notify file was run
+
+# Notify if Bot was setup correctly
+@client.event
 async def on_ready():
-    print ("Ready when you are xd")
-    print ("I am running on " + bot.user.name)
-    print ("With the ID: " + bot.user.id)
+    print("Bot is online")
 
-@bot.command(pass_context=True)
-async def ping(ctx):
-    await bot.say(":ping_pong: ping!! xSSS")
-    print ("user has pinged")
+# -------------------------------
+# -------- Functions ------------
+# -------------------------------
 
-@bot.command(pass_context=True)
-async def info(ctx, user: discord.Member):
-    await bot.say("The users name is: {}".format(user.name))
-    await bot.say("The users ID is: {}".format(user.id))
-    await bot.say("The users status is: {}".format(user.status))
-    await bot.say("The users highest role is: {}".format(user.top_role))
-    await bot.say("The user joined at: {}".format(user.joined_at))
+@client.event
+async def on_message(message):
 
-@bot.command(pass_context=True)
-async def kick(ctx, user: discord.Member):
-    await bot.say(":boot: Cya, {}. Ya loser!".format(user.name))
-    await bot.kick(user)
+    # -------------------------------
+    # ---------- Setup --------------
+    # -------------------------------
 
-bot.run(TOKEN)
+    inputText = message.content # The Message Sent (str)
+
+    # -------------------------------
+    # -------- Fun Things -----------
+    # -------------------------------
+
+    if inputText == ("Am I smart?"):
+        if message.author.name == "Qcumber":
+            await client.send_message(message.channel, "Yes!")
+        else:
+            smartPerson = '<@285571058353045505>'
+            await client.send_message(message.channel, "No, but %s is!" % smartPerson)
+
+    elif inputText.startswith("!ping"):
+        await client.send_message(message.channel, ":ping_pong: pong!")
+
+    elif message.content.startswith("!say"):
+        args = inputText.split(" ")
+        if len(args) > 1: await client.send_message(client.get_channel('496435880852979721'), "%s" % (" ".join(args[1:])))
+    
+    # -------------------------------
+    # --------- Utilities -----------
+    # -------------------------------
+
+    if inputText.startswith("!clear"):
+        number = inputText.split(" ")[1]
+        mgs = [] #Empty list to put all the messages in the log
+
+        try:
+            number = int(number) #Converting the amount of messages to delete to an integer
+        except ValueError:
+            await client.send_message(message.channel, "Invalid Syntax. Please phrase it as `!clear number`")
+            return
+
+        try:
+            async for x in client.logs_from(message.channel, limit = number):
+                mgs.append(x)
+            await client.delete_messages(mgs)
+
+        except discord.errors.ClientException:
+            return
+
+    # -------------------------------
+    # ------ Useful Functions -------
+    # -------------------------------
+
+    # Filter Prototype
+    for word in inputText.split(" "):
+        if word.upper() in chat_filter:
+            await client.send_message(message.channel, "**Hey!** You can't send that message here!")
+            break
+
+# Run the Bot
+client.run(TOKEN)
