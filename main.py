@@ -69,14 +69,16 @@ async def on_message(message):
 
     if inputText.startswith("!clear"):
         number = inputText.split(" ")[1]
-        mgs = [] #Empty list to put all the messages in the log
+        mgs = [] # Empty list to put all the messages in the log
 
+        # Convert "amount of messages to delete" to an integer
         try:
-            number = int(number) #Converting the amount of messages to delete to an integer
+            number = int(number)
         except ValueError:
             await client.send_message(message.channel, "Invalid Syntax. Please phrase it as `!clear number`")
             return
 
+        # Try to delete them ALL
         try:
             async for x in client.logs_from(message.channel, limit = number):
                 mgs.append(x)
