@@ -4,4 +4,4 @@ install:
 python:
   - "3.6"
 script:
-  - python main.py
+  - python tests.py
