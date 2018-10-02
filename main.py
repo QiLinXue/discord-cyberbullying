@@ -9,8 +9,7 @@
 #-----------------------------------------------------------------------------
 
 # File Setup
-import settings
-from bot_setup import * # pylint: disable=W0614
+from botSetup import * # pylint: disable=W0614
 
 TOKEN = os.getenv('TOKEN')
 
@@ -64,7 +63,7 @@ async def on_message(message):
         await client.send_message(message.channel, "**Hey!** You can't send that message here!")
     
     if inputText.startswith("!clear"):
-        await clear.run(message)
+        await clear.run(message,client)
 
 
 

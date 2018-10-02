@@ -5,7 +5,9 @@ from discord.ext.commands import Bot
 import asyncio
 import os
 
+# Load Bot
 from dotenv import load_dotenv
 load_dotenv(verbose=True)
 
-client = Bot('') # Initialize
+# Initialize Client
+client = Bot('')
