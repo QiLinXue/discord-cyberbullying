@@ -1,3 +1,4 @@
+# pylint: disable=W0614
 from bot_setup import *
 
 async def get(message):
