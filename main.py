@@ -8,23 +8,19 @@
 # Updated:     01-Oct-2018
 #-----------------------------------------------------------------------------
 
-# Discord Imports
-import discord
-from discord.ext import commands
-from discord.ext.commands import Bot
-import asyncio
-import os
-
 # File Setup
 import settings
+from bot_setup import * # pylint: disable=W0614
+
 TOKEN = os.getenv('TOKEN')
+
+# Imports
+from client.imports import * # client imports
 
 # -------------------------------
 # ------- Intialization ---------
 # -------------------------------
 
-client = Bot('') # Initialize
-chat_filter = ["FUCK","BITCH","ASS","FUCKING","CUNT","DESPACITO","IDIOT","PATHETIC"] # Vocabulary
 print("Starting up...") # Notify file was run
 
 # Notify if Bot was setup correctly
@@ -63,39 +59,15 @@ async def on_message(message):
         args = inputText.split(" ")
         if len(args) > 1: await client.send_message(client.get_channel('496435880852979721'), "%s" % (" ".join(args[1:])))
     
-    # -------------------------------
-    # --------- Utilities -----------
-    # -------------------------------
-
-    if inputText.startswith("!clear"):
-        number = inputText.split(" ")[1]
-        mgs = [] # Empty list to put all the messages in the log
-
-        # Convert "amount of messages to delete" to an integer
-        try:
-            number = int(number)
-        except ValueError:
-            await client.send_message(message.channel, "Invalid Syntax. Please phrase it as `!clear number`")
-            return
-
-        # Try to delete them ALL
-        try:
-            async for x in client.logs_from(message.channel, limit = number):
-                mgs.append(x)
-            await client.delete_messages(mgs)
-
-        except discord.errors.ClientException:
-            return
-
-    # -------------------------------
-    # ------ Useful Functions -------
-    # -------------------------------
-
     # Filter Prototype
-    for word in inputText.split(" "):
-        if word.upper() in chat_filter:
-            await client.send_message(message.channel, "**Hey!** You can't send that message here!")
-            break
+    if simpleFilter.run(inputText):
+        await client.send_message(message.channel, "**Hey!** You can't send that message here!")
+    
+    if inputText.startswith("!clear"):
+        await clear.run(message)
+
+
+
 
 # Run the Bot
 client.run(TOKEN)
