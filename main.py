@@ -9,7 +9,6 @@
 #-----------------------------------------------------------------------------
 
 # File Setup
-import settings
 from bot_setup import * # pylint: disable=W0614
 
 TOKEN = os.getenv('TOKEN')
