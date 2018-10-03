@@ -4,7 +4,7 @@ def getRange(user_input):
     # Determine how many messages which need to be deleted
     try:
         num = user_input.split(" ")[1]
-    except:
+    except IndexError:
         return -1
 
     try:
@@ -26,7 +26,7 @@ async def getMessages(message,client):
 
     if num < 0:
         return num
-    
+
     toDelete = client.logs_from(message.channel, limit = num)
 
     mgs = []
