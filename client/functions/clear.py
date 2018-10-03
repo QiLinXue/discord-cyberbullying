@@ -6,8 +6,7 @@ def getRange(user_input):
         num = user_input.split(" ")[1]
     except:
         return -1
-    
-    
+
     try:
         if int(num) == float(num):
             num = int(num) + 1
@@ -40,7 +39,9 @@ async def getMessages(message,client):
 async def run(message,client):
     mgs = await getMessages(message,client)
 
-    if mgs < 0:
+    try:
+        mgs = int(mgs)
         await client.send_message(message.channel, "Sorry, but the correct format is `!clear num` where num is an int in the range [1,99]")
-    else:
+
+    except TypeError:
         await client.delete_messages(mgs)

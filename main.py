@@ -57,7 +57,7 @@ async def on_message(message):
     elif message.content.startswith("!say"):
         args = inputText.split(" ")
         if len(args) > 1: await client.send_message(client.get_channel('496435880852979721'), "%s" % (" ".join(args[1:])))
-    
+
     # Filter Prototype
     if simpleFilter.run(inputText):
         await client.send_message(message.channel, "**Hey!** You can't send that message here!")

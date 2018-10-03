@@ -19,7 +19,7 @@ if __name__ == '__main__':
     for test_class in test_classes_to_run:
         suite = loader.loadTestsFromTestCase(test_class)
         suites_list.append(suite)
-    
+
     # Combined Suite
     combined_suite = unittest.TestSuite(suites_list)
     runner = unittest.TextTestRunner()
