@@ -12,13 +12,13 @@ def getRange(user_input):
             num = int(num) + 1
         else:
             return -2
-    except:
+    except ValueError:
         return -2
 
     # Determine the messages needed to be deleted
     if num < 2 or num > 100:
         return -3
-    
+
     return num
 
 async def getMessages(message,client):
