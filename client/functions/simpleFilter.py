@@ -2,5 +2,7 @@ chat_filter = ["FUCK","BITCH","ASS","FUCKING","CUNT","DESPACITO","IDIOT","PATHET
 
 def run(phrase):
     for word in phrase.split(" "): 
-        if word.upper() in chat_filter: return True
+        if word.upper() in chat_filter:
+            return True
+
     return False
