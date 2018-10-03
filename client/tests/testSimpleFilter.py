@@ -1,15 +1,21 @@
 import unittest
-from client.functions.simpleFilter import run, baddies
+from client.functions.simpleFilter import run, baddies_basic,baddies_full
 
 class TestSimpleFilter(unittest.TestCase):
 
     def test_range(self):
-        # True = Contains Swear Word
-        self.assertTrue(run("You're a fucking idiot"))
-        self.assertTrue(run("I like PATHETIC people"))
-        self.assertTrue(run(" ".join(baddies)))
-        self.assertTrue(run("YOU cUnT"))
+        # 1 = Contains Swear Word
+        self.assertEqual(run("You're a fucking idiot"),1)
+        self.assertEqual(run("I like PATHETIC people"),1)
+        self.assertEqual(run(" ".join(baddies_basic)),1)
+        self.assertEqual(run("YOU cUnT"),1)
 
-        # False = Doesn't Contain Swear Word
-        self.assertFalse(run("I have many assets"))
-        self.assertFalse(run("\s")) # pylint: disable=W1401
+        # 0.5 = Might contain swear word
+        self.assertEqual(run("you ArSe"),0.5)
+        self.assertEqual(run(" ".join(baddies_full)),0.5)
+        self.assertEqual(run("ur a f.u.c.k boy"),0.5)
+        self.assertEqual(run("you wanna doggystyle me"),0.5)
+
+        # 0 = Doesn't Contain Swear Word
+        self.assertEqual(run("I have many assets"),0)
+        self.assertEqual(run("\s"),0) # pylint: disable=W1401

@@ -59,8 +59,11 @@ async def on_message(message):
         if len(args) > 1: await client.send_message(client.get_channel('496435880852979721'), "%s" % (" ".join(args[1:])))
 
     # Filter Prototype
-    if simpleFilter.run(inputText):
-        await client.send_message(message.channel, "**Hey!** You can't send that message here!")
+    vulgar_confidence = simpleFilter.run(inputText)
+    if vulgar_confidence == 1:
+        await client.send_message(message.channel, "**Hey!** You can't send that message here! Confidence: 100%")
+    elif vulgar_confidence == 0.5:
+        await client.send_message(message.channel, "**Hey!** You can't send that message here! Confidence: 50%")
 
     if inputText.startswith("!clear"):
         await clear.run(message,client)
