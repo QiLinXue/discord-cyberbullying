@@ -1,8 +1,12 @@
-chat_filter = ["FUCK","BITCH","ASS","FUCKING","CUNT","DESPACITO","IDIOT","PATHETIC"] # Vocabulary
+f_input = open("data/baddies.txt","r")
+baddies = f_input.readlines()
+f_input.close()
+
+baddies = [x.strip() for x in baddies]
 
 def run(phrase):
     for word in phrase.split(" "):
-        if word.upper() in chat_filter:
+        if word.lower() in baddies:
             return True
 
     return False

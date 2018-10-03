@@ -1,5 +1,5 @@
 import unittest
-from client.functions.simpleFilter import run, chat_filter
+from client.functions.simpleFilter import run, baddies
 
 class TestSimpleFilter(unittest.TestCase):
 
@@ -7,7 +7,7 @@ class TestSimpleFilter(unittest.TestCase):
         # True = Contains Swear Word
         self.assertTrue(run("You're a fucking idiot"))
         self.assertTrue(run("I like PATHETIC people"))
-        self.assertTrue(run(" ".join(chat_filter)))
+        self.assertTrue(run(" ".join(baddies)))
         self.assertTrue(run("YOU cUnT"))
 
         # False = Doesn't Contain Swear Word
