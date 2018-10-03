@@ -61,7 +61,7 @@ async def on_message(message):
     # Filter Prototype
     if simpleFilter.run(inputText):
         await client.send_message(message.channel, "**Hey!** You can't send that message here!")
-    
+
     if inputText.startswith("!clear"):
         await clear.run(message,client)
 
