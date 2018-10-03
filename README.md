@@ -1,4 +1,6 @@
 # Anti Cyberbullying Bot
+[![Build Status](https://travis-ci.com/QiLinXue/discord-cyberbullying.svg?branch=master)](https://travis-ci.com/QiLinXue/discord-cyberbullying)
+[![Waffle.io - Columns and their card count](https://badge.waffle.io/QiLinXue/discord-cyberbullying.svg?columns=all)](https://waffle.io/volunteeringpeel/volunteeringpeel)
 
 [Join the Testing Discord Server Here!](https://discord.gg/A86YDCm)
 
