@@ -68,6 +68,9 @@ async def on_message(message):
     if inputText.startswith("!clear"):
         await clear.run(message,client)
 
+    if inputText.startswith("!trump") and inputText.count(' ') > 0:
+        mes = inputText.split(' ', 1)[1]
+        await client.send_message(message.channel, trumpCount.run(mes))
 
 
 
