@@ -4,12 +4,14 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv(verbose=True)
-MYSQLPW = os.getenv('MYSQLPW')
+DBUSER = os.getenv('DBUSER')
+DBPASS = os.getenv('DBPASS')
+
 mydb = mysql.connector.connect(
-    host="localhost",
-    user="root",
-    passwd=MYSQLPW,
-    database="cyberbullying"
+    host="us-cdbr-iron-east-01.cleardb.net",
+    user=DBUSER,
+    passwd=DBPASS,
+    database="heroku_5e695080c7ef107"
 )
 
 mycursor = mydb.cursor()
