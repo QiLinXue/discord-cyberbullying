@@ -1,1 +1,1 @@
-from client.functions import simpleFilter, clear, trumpCount
+from client.functions import simpleFilter, clear, trumpCount, sqlFilter
