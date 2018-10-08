@@ -8,8 +8,10 @@
 # Updated:     01-Oct-2018
 #-----------------------------------------------------------------------------
 
+# pylint: disable=W0614
+
 # File Setup
-from botSetup import * # pylint: disable=W0614
+from botSetup import *
 
 TOKEN = os.getenv('TOKEN')
 
