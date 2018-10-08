@@ -1,5 +1,4 @@
-create database if not exists cyberbullying;
-use cyberbullying;
+use heroku_5e695080c7ef107;
 
 drop table if exists badwords;
 
