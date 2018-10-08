@@ -8,13 +8,16 @@
 # Updated:     01-Oct-2018
 #-----------------------------------------------------------------------------
 
+# pylint: disable=W0614
+
 # File Setup
-from botSetup import * # pylint: disable=W0614
+from botSetup import *
 
 TOKEN = os.getenv('TOKEN')
 
 # Imports
 from client.imports import * # client imports
+from server.imports import * # server imports
 
 # -------------------------------
 # ------- Intialization ---------
@@ -59,7 +62,7 @@ async def on_message(message):
         if len(args) > 1: await client.send_message(client.get_channel('496435880852979721'), "%s" % (" ".join(args[1:])))
 
     # Filter Prototype
-    vulgar_confidence = simpleFilter.run(inputText)
+    vulgar_confidence = sqlFilter.run(inputText)
     if vulgar_confidence == 1:
         await client.send_message(message.channel, "**Hey!** You can't send that message here! Confidence: 100%")
     elif vulgar_confidence == 0.5:
@@ -71,6 +74,11 @@ async def on_message(message):
     if inputText.startswith("!trump") and inputText.count(' ') > 0:
         mes = inputText.split(' ', 1)[1]
         await client.send_message(message.channel, trumpCount.run(mes))
+    
+    if inputText.startswith("!add") and inputText.count(' ') > 0:
+        mes = inputText.split(' ', 1)[1]
+        badWords.run(mes)
+        await client.send_message(message.channel, "Successfully added to database")
 
 
 

@@ -1,0 +1,1 @@
+SELECT * FROM heroku_5e695080c7ef107.badwords LIMIT 1000;
