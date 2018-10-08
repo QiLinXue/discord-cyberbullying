@@ -1,7 +1,7 @@
 # Anti Cyberbullying Bot
 [![Build Status](https://travis-ci.com/QiLinXue/discord-cyberbullying.svg?branch=master)](https://travis-ci.com/QiLinXue/discord-cyberbullying)
 [![CodeFactor](https://www.codefactor.io/repository/github/qilinxue/discord-cyberbullying/badge)](https://www.codefactor.io/repository/github/qilinxue/discord-cyberbullying)
-[![Waffle.io - Columns and their card count](https://badge.waffle.io/QiLinXue/discord-cyberbullying.svg?columns=all)](https://waffle.io/volunteeringpeel/volunteeringpeel)
+[![Waffle.io - Columns and their card count](https://badge.waffle.io/QiLinXue/discord-cyberbullying.svg?columns=all)](https://waffle.io/QiLinXue/discord-cyberbullying)
 
 [Join the Testing Discord Server Here!](https://discord.gg/A86YDCm)
 
