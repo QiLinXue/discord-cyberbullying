@@ -1,11 +1,5 @@
 import mysql.connector
-
-import os
-from dotenv import load_dotenv
-
-load_dotenv(verbose=True)
-DBUSER = os.getenv('DBUSER')
-DBPASS = os.getenv('DBPASS')
+from serverSetup import DBUSER,DBPASS
 
 mydb = mysql.connector.connect(
     host="us-cdbr-iron-east-01.cleardb.net",
@@ -36,7 +30,3 @@ def fetch():
         badWordArray.append(row[0])
 
     return badWordArray
-
-
-
-    
