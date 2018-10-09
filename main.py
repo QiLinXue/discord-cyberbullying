@@ -24,6 +24,7 @@ from server.imports import * # server imports
 # -------------------------------
 
 print("Starting up...") # Notify file was run
+baddies = badWords.fetch()
 
 # Notify if Bot was setup correctly
 @client.event
@@ -36,11 +37,11 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-
     # -------------------------------
     # ---------- Setup --------------
     # -------------------------------
 
+    global baddies
     inputText = message.content # The Message Sent (str)
 
     # -------------------------------
@@ -61,26 +62,50 @@ async def on_message(message):
         args = inputText.split(" ")
         if len(args) > 1: await client.send_message(client.get_channel('496435880852979721'), "%s" % (" ".join(args[1:])))
 
-    # Filter Prototype
-    vulgar_confidence = sqlFilter.run(inputText)
-    if vulgar_confidence == 1:
-        await client.send_message(message.channel, "**Hey!** You can't send that message here! Confidence: 100%")
-    elif vulgar_confidence == 0.5:
-        await client.send_message(message.channel, "**Hey!** You can't send that message here! Confidence: 50%")
-
-    if inputText.startswith("!clear"):
-        await clear.run(message,client)
-
     if inputText.startswith("!trump") and inputText.count(' ') > 0:
         mes = inputText.split(' ', 1)[1]
         await client.send_message(message.channel, trumpCount.run(mes))
+
+    # -------------------------------
+    # -------- Work Things ----------
+    # -------------------------------
+
+    # Clears Messages
+    if inputText.startswith("!clear"):
+        await clear.run(message,client)
     
+    # Add Bad Words
     if inputText.startswith("!add") and inputText.count(' ') > 0:
         mes = inputText.split(' ', 1)[1]
-        badWords.run(mes)
-        await client.send_message(message.channel, "Successfully added to database")
+        if mes in baddies:
+            await client.send_message(message.channel, "Word already added")
+        else: 
+            badWords.run(mes,baddies) # Run and get status
+            await client.send_message(message.channel, "Successfully added %s to database" % mes)
+            baddies.append(mes)
 
+    # Remove Bad Words
+    if inputText.startswith("!delete") and inputText.count(' ') > 0:
+        mes = inputText.split(' ', 1)[1]
 
+        if mes in baddies:
+            badWords.delete(mes)
+            await client.send_message(message.channel, "Successfully deleted %s from database" % mes)
+            baddies = badWords.fetch()
+        else:
+            await client.send_message(message.channel, "You silly. %s is not even a banned word!" % mes)
+
+    # Print Bad Words
+    if inputText.startswith("!print"):
+        await client.send_message(message.channel,badWords.printAll())
+    
+    # Filters Messages
+    if not message.author.name == "Mr Seidel":
+        vulgar_confidence = sqlFilter.run(inputText,baddies)
+        if vulgar_confidence == 1:
+            await client.send_message(message.channel, "**Hey!** You can't send that message here! Confidence: 100%")
+        elif vulgar_confidence == 0.5:
+            await client.send_message(message.channel, "**Hey!** You can't send that message here! Confidence: 50%")
 
 # Run the Bot
 client.run(TOKEN)
