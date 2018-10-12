@@ -23,6 +23,10 @@ class BadWordsDB():
         self.cursor.close()
         self.mydb.close()
 
+    def escapeString(self,sqlString):
+        sqlString.replace('\'','')
+        return sqlString
+
     def fetch(self):
         self.connect()
 
@@ -44,9 +48,9 @@ class BadWordsDB():
             self.connect()
 
             sqlFormula = "INSERT INTO badwords (word, badness) VALUE (%s,%s)"
-            word = (targetWord.lower(),1)
-
-            self.cursor.execute(sqlFormula, word)
+            word = (self.escapeString(targetWord.lower()),1)
+            
+            self.cursor.execute(sqlFormula,word)
             self.close()
     
     def printAll(self):
@@ -57,6 +61,7 @@ class BadWordsDB():
         self.connect()
 
         sqlFormula = "DELETE FROM badwords WHERE word='%s'" % targetWord
+        sqlFormula = self.escapeString(sqlFormula)
 
         self.cursor.execute(sqlFormula)
         self.close()
