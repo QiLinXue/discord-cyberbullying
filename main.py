@@ -15,6 +15,8 @@ from botSetup import *
 
 TOKEN = os.getenv('TOKEN')
 
+from serverSetup import DBUSER,DBPASS
+
 # Imports
 from client.imports import * # client imports
 from server.imports import * # server imports
@@ -24,7 +26,8 @@ from server.imports import * # server imports
 # -------------------------------
 
 print("Starting up...") # Notify file was run
-baddies = badWords.fetch()
+wordFilter = badWords.BadWordsDB("us-cdbr-iron-east-01.cleardb.net",DBUSER,DBPASS,"heroku_5e695080c7ef107") # Initialize Variables
+baddiesList = wordFilter.fetch() # Intialize Baddies List
 
 # Notify if Bot was setup correctly
 @client.event
@@ -41,7 +44,7 @@ async def on_message(message):
     # ---------- Setup --------------
     # -------------------------------
 
-    global baddies
+    global baddiesList
     inputText = message.content # The Message Sent (str)
 
     # -------------------------------
@@ -77,31 +80,31 @@ async def on_message(message):
     # Add Bad Words
     if inputText.startswith("!add") and inputText.count(' ') > 0:
         mes = inputText.split(' ', 1)[1]
-        if mes in baddies:
+        if mes in baddiesList:
             await client.send_message(message.channel, "Word already added")
         else: 
-            badWords.run(mes,baddies) # Run and get status
+            wordFilter.insert(mes,baddiesList) # Run and get status
             await client.send_message(message.channel, "Successfully added %s to database" % mes)
-            baddies.append(mes)
+            baddiesList.append(mes)
 
     # Remove Bad Words
     if inputText.startswith("!delete") and inputText.count(' ') > 0:
         mes = inputText.split(' ', 1)[1]
 
-        if mes in baddies:
-            badWords.delete(mes)
+        if mes in baddiesList:
+            wordFilter.delete(mes)
             await client.send_message(message.channel, "Successfully deleted %s from database" % mes)
-            baddies = badWords.fetch()
+            baddiesList = wordFilter.fetch()
         else:
             await client.send_message(message.channel, "You silly. %s is not even a banned word!" % mes)
 
     # Print Bad Words
     if inputText.startswith("!print"):
-        await client.send_message(message.channel,badWords.printAll())
+        await client.send_message(message.channel,wordFilter.printAll())
     
     # Filters Messages
     if not message.author.name == "Mr Seidel":
-        vulgar_confidence = sqlFilter.run(inputText,baddies)
+        vulgar_confidence = sqlFilter.run(inputText,baddiesList)
         if vulgar_confidence == 1:
             await client.send_message(message.channel, "**Hey!** You can't send that message here! Confidence: 100%")
         elif vulgar_confidence == 0.5:
