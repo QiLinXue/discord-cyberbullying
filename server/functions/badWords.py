@@ -35,8 +35,7 @@ class BadWordsDB():
         for row in myresults:
             badWordArray.append(row[0])
 
-        self.cursor.close()
-        self.mydb.close()
+        self.close()
 
         return badWordArray
     
@@ -48,8 +47,7 @@ class BadWordsDB():
             word = (targetWord.lower(),1)
 
             self.cursor.execute(sqlFormula, word)
-            self.mydb.commit()
-            self.cursor.close()
+            self.close()
     
     def printAll(self):
         baddies = self.fetch()
@@ -61,5 +59,4 @@ class BadWordsDB():
         sqlFormula = "DELETE FROM badwords WHERE word='%s'" % targetWord
 
         self.cursor.execute(sqlFormula)
-        self.mydb.commit()
-        self.cursor.close()
+        self.close()
