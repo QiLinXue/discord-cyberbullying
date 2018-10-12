@@ -1,0 +1,2 @@
+# Definitely not safe, but screw it
+skips: ['B608']

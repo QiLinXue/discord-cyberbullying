@@ -1,91 +1,67 @@
 import mysql.connector
-from serverSetup import DBUSER,DBPASS
 
-# TODO move mydb to main.py and combine it with the fetch method there to minimize time
-mydb = mysql.connector.connect(
-    host="us-cdbr-iron-east-01.cleardb.net",
-    user=DBUSER,
-    passwd=DBPASS,
-    database="heroku_5e695080c7ef107"
-)
+class BadWordsDB():
+    from serverSetup import DBUSER,DBPASS
 
-def getCursor():
-    try:
-        cursor = mydb.cursor()
-    except:
-        mydb = mysql.connector.connect(
-            host="us-cdbr-iron-east-01.cleardb.net",
-            user=DBUSER,
-            passwd=DBPASS,
-            database="heroku_5e695080c7ef107"
+    def __init__(self,host,user,passwd,database,filterList=[]):
+        self.host= host
+        self.user = user
+        self.passwd = passwd
+        self.database = database
+        self.filterList = filterList
+
+    def connect(self):
+        self.mydb = mysql.connector.connect(
+            host=self.host,
+            user=self.user,
+            passwd=self.passwd,
+            database=self.database
         )
-        cursor = mydb.cursor()
-    return cursor
+        self.cursor = self.mydb.cursor()
 
-def fetch():
-    try:
-        mycursor = mydb.cursor()
-    except:
-        mydb = mysql.connector.connect(
-            host="us-cdbr-iron-east-01.cleardb.net",
-            user=DBUSER,
-            passwd=DBPASS,
-            database="heroku_5e695080c7ef107"
-        )
-        mycursor = mydb.cursor()
+    def close(self):
+        self.cursor.close()
+        self.mydb.close()
 
-    sqlFormula = "SELECT * FROM badwords"
-    mycursor.execute(sqlFormula)
-    myresults = mycursor.fetchall()
+    def escapeString(self,sqlString):
+        sqlString.replace('\'','')
+        return sqlString
 
-    # Format everything
-    badWordArray = []
-    for row in myresults:
-        badWordArray.append(row[0])
+    def fetch(self):
+        self.connect()
 
-    mycursor.close()
-    return badWordArray
+        sqlFormula = "SELECT * FROM badwords"
+        self.cursor.execute(sqlFormula)
+        myresults = self.cursor.fetchall()
 
-def run(badWord,baddies):
+        # Format everything
+        badWordArray = []
+        for row in myresults:
+            badWordArray.append(row[0])
 
-    if not badWord.lower() in baddies:
-        try:
-            mycursor = mydb.cursor()
-        except:
-            mydb = mysql.connector.connect(
-                host="us-cdbr-iron-east-01.cleardb.net",
-                user=DBUSER,
-                passwd=DBPASS,
-                database="heroku_5e695080c7ef107"
-            )
-            mycursor = mydb.cursor()
-        
-        sqlFormula = "INSERT INTO badwords (word, badness) VALUE (%s,%s)"
-        word = (badWord.lower(),1)
+        self.close()
 
-        mycursor.execute(sqlFormula, word)
-        mydb.commit()
-        mycursor.close()
-
-def printAll():
+        return badWordArray
     
-    baddies = fetch()
-    return ' '.join(baddies)
+    def insert(self,targetWord,badwordlist):
+        if not targetWord.lower() in badwordlist:
+            self.connect()
 
-def delete(badWord):
-    try:
-        mycursor = mydb.cursor()
-    except:
-        mydb = mysql.connector.connect(
-            host="us-cdbr-iron-east-01.cleardb.net",
-            user=DBUSER,
-            passwd=DBPASS,
-            database="heroku_5e695080c7ef107"
-        )
-        mycursor = mydb.cursor()
+            sqlFormula = "INSERT INTO badwords (word, badness) VALUE (%s,%s)"
+            word = (self.escapeString(targetWord.lower()),1)
+            
+            self.cursor.execute(sqlFormula,word)
+            self.close()
     
-    sqlFormula = "DELETE FROM badwords WHERE word='%s'" % badWord
+    def printAll(self):
+        baddies = self.fetch()
+        return ' '.join(baddies)
 
-    mycursor.execute(sqlFormula)
-    mydb.commit()
-    mycursor.close()
+    def delete(self,targetWord):
+        self.connect()
+
+        sqlFormula = "DELETE FROM badwords WHERE word='%s'" % targetWord
+        sqlFormula = self.escapeString(sqlFormula)
+
+        self.cursor.execute(sqlFormula)
+        self.close()
