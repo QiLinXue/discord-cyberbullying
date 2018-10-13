@@ -21,6 +21,8 @@ from serverSetup import DBUSER,DBPASS
 from client.imports import * # client imports
 from server.imports import * # server imports
 
+import discord
+
 # -------------------------------
 # ------- Intialization ---------
 # -------------------------------
