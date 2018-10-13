@@ -21,6 +21,8 @@ from serverSetup import DBUSER,DBPASS
 from client.imports import * # client imports
 from server.imports import * # server imports
 
+import discord
+
 # -------------------------------
 # ------- Intialization ---------
 # -------------------------------
@@ -32,9 +34,10 @@ baddiesList = wordFilter.fetch() # Intialize Baddies List
 @client.event
 async def on_ready():
     '''
-    Asynchronous function that runs when bot is ready
+    Asynchronous function that runs when bot is ready, changes status, and prints message
     Reference: https://discordpy.readthedocs.io/en/latest/api.html#discord.on_ready
     '''
+    await client.change_presence(game=discord.Game(name='with your grades bwahahaha'))
     print("Bot is online")
 
 # -------------------------------
@@ -109,7 +112,7 @@ async def on_message(message):
     
     # Filters Messages
     elif not message.author.name == "Mr Seidel":
-        vulgar_confidence = sqlFilter.run(inputText,baddiesList)
+        vulgar_confidence = filters.run(inputText,baddiesList)
         if vulgar_confidence == 1:
             await client.send_message(message.channel, "**Hey!** You can't send that message here! Confidence: 100%")
         elif vulgar_confidence == 0.5:
