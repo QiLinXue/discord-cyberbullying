@@ -7,7 +7,7 @@
 #
 # Author:      QiLin Xue
 # Created:     13-Sep-2018
-# Updated:     19-Sep-2018
+# Updated:     13-Oct-2018
 #-----------------------------------------------------------------------------
 
 # ▀▀█▀▀░█▀█░█░░█░█▄░▄█░█▀█░░
@@ -67,14 +67,14 @@ def wordCount(tPhrase):
   Prints
 	-------
 	if there are more unmatched words
-        prints out the longest chain number for the current string
-    if there are no more unmatched words
-        prints out the overall score when matched to Trump
+    prints out the longest chain number for the current string
+  if there are no more unmatched words
+    prints out the overall score when matched to Trump
   
   Returns
   -------
-  String
-    Can only be True, called to end the recursion when all words have been checked
+  wordCount()
+    Recursion that loops through the words in the string
 
   """
 
@@ -133,7 +133,6 @@ def wordCount(tPhrase):
     del tPhrase[:highestIndex+1]
     tPhrase = ' '.join(tPhrase)
 
-
   # Checks if recursion is finished
   if not tPhrase:
 
@@ -157,6 +156,19 @@ tweets = cleanup(tweets) # cleanup
 # Execute command and loop
 
 def run(inputStatement):
+  '''
+  Finds similarity from input statements
+
+  Parameters
+  ----------
+  inputStatement: str
+    the phrase to check for similarity
+  
+  Returns
+  -------
+  float
+    the percentage similarity
+  '''
   global length
   global score
   score = 0
