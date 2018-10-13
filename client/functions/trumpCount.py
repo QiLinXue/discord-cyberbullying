@@ -162,7 +162,7 @@ def run(inputStatement):
   ----------
   inputStatement: str
     the phrase to check for similarity
-  
+
   Returns
   -------
   float
