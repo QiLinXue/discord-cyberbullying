@@ -93,7 +93,7 @@ def wordCount(tPhrase):
 
   # Loop through all words in phrase
   for i in range(len(tPhrase)):
-      
+
     # Loop through all tweets
     for j in range(len(tempTweets)):
 
