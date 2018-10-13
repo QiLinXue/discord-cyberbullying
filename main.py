@@ -5,7 +5,7 @@
 #
 # Author:      QiLin
 # Created:     31-Sep-2018
-# Updated:     01-Oct-2018
+# Updated:     13-Oct-2018
 #-----------------------------------------------------------------------------
 
 # pylint: disable=W0614
@@ -29,9 +29,12 @@ print("Starting up...") # Notify file was run
 wordFilter = badWords.BadWordsDB("us-cdbr-iron-east-01.cleardb.net",DBUSER,DBPASS,"heroku_5e695080c7ef107") # Initialize Variables
 baddiesList = wordFilter.fetch() # Intialize Baddies List
 
-# Notify if Bot was setup correctly
 @client.event
 async def on_ready():
+    '''
+    Asynchronous function that runs when bot is ready
+    Reference: https://discordpy.readthedocs.io/en/latest/api.html#discord.on_ready
+    '''
     print("Bot is online")
 
 # -------------------------------
@@ -40,6 +43,22 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
+    '''
+    Asynchronous function that performs several functions based off of the input message
+    Reference: https://discordpy.readthedocs.io/en/latest/api.html#discord.on_message
+
+    Commands
+    --------
+    !trump [str]: fun command that returns how similar a string is to trump's tweets
+    !clear [int]: clears the specified number of messages from current channel
+    !add [str]: adds the string to the list of bad words
+    !delete [str]: deletes the string from the list of bad words
+    !print: sends out the current bad words
+    !ping: sends message confirming on_message is successfully run
+    
+    ..note:: The function also constantly looks for bad words contained within message,
+                outputs a message if it violates the conditions
+    '''
     # -------------------------------
     # ---------- Setup --------------
     # -------------------------------
@@ -51,20 +70,6 @@ async def on_message(message):
     # -------- Fun Things -----------
     # -------------------------------
 
-    if inputText == ("Am I smart?"):
-        if message.author.name == "Qcumber":
-            await client.send_message(message.channel, "Yes!")
-        else:
-            smartPerson = '<@285571058353045505>'
-            await client.send_message(message.channel, "No, but %s is!" % smartPerson)
-
-    elif inputText.startswith("!ping"):
-        await client.send_message(message.channel, ":ping_pong: pong!")
-
-    elif message.content.startswith("!say"):
-        args = inputText.split(" ")
-        if len(args) > 1: await client.send_message(client.get_channel('496435880852979721'), "%s" % (" ".join(args[1:])))
-
     if inputText.startswith("!trump") and inputText.count(' ') > 0:
         mes = inputText.split(' ', 1)[1]
         await client.send_message(message.channel, trumpCount.run(mes))
@@ -74,11 +79,11 @@ async def on_message(message):
     # -------------------------------
 
     # Clears Messages
-    if inputText.startswith("!clear"):
+    if inputText.startswith("!clear") and inputText.count(' ') > 0:
         await clear.run(message,client)
     
     # Add Bad Words
-    if inputText.startswith("!add") and inputText.count(' ') > 0:
+    elif inputText.startswith("!add") and inputText.count(' ') > 0:
         mes = inputText.split(' ', 1)[1]
         if mes in baddiesList:
             await client.send_message(message.channel, "Word already added")
@@ -88,7 +93,7 @@ async def on_message(message):
             baddiesList.append(mes)
 
     # Remove Bad Words
-    if inputText.startswith("!delete") and inputText.count(' ') > 0:
+    elif inputText.startswith("!delete") and inputText.count(' ') > 0:
         mes = inputText.split(' ', 1)[1]
 
         if mes in baddiesList:
@@ -99,16 +104,19 @@ async def on_message(message):
             await client.send_message(message.channel, "You silly. %s is not even a banned word!" % mes)
 
     # Print Bad Words
-    if inputText.startswith("!print"):
+    elif inputText.startswith("!print"):
         await client.send_message(message.channel,wordFilter.printAll())
     
     # Filters Messages
-    if not message.author.name == "Mr Seidel":
+    elif not message.author.name == "Mr Seidel":
         vulgar_confidence = sqlFilter.run(inputText,baddiesList)
         if vulgar_confidence == 1:
             await client.send_message(message.channel, "**Hey!** You can't send that message here! Confidence: 100%")
         elif vulgar_confidence == 0.5:
             await client.send_message(message.channel, "**Hey!** You can't send that message here! Confidence: 50%")
+    
+    if inputText.startswith("!ping"):
+        await client.send_message(message.channel, ":ping_pong: pong!")
 
 # Run the Bot
 client.run(TOKEN)
