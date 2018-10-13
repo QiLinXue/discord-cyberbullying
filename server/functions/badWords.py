@@ -31,7 +31,7 @@ class BadWordsDB():
         Fetches bad words and combines them into a list
     printAll() -> str
         combines bad word list into string
-    insert(targetWord: str, badwordlist: str[]) -> None
+    insert(targetWord: str, badWordArray: str[]) -> None
         Inserts a new bad word into the database
     delete(targetWord: str) -> None
         Deletes the given bad word from the database
