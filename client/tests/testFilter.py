@@ -1,5 +1,5 @@
 import unittest
-from client.functions.filter import run, baddiesBasic,baddiesFull
+from client.functions.filter import run, baddiesBasic
 
 class TestFilter(unittest.TestCase):
     '''

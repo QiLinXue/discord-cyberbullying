@@ -19,7 +19,7 @@ def run(phrase,baddies):
         the phrase to check for profanity
     baddies: str[]
         the list of bad words
-    
+
     Returns
     -------
     int

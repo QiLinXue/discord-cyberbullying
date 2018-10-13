@@ -18,7 +18,6 @@
 # Imports
 #-----------------------------------------------------------------------------
 
-import sys # interactivity
 import math # calculating percentage
 
 #-----------------------------------------------------------------------------
@@ -70,7 +69,7 @@ def wordCount(tPhrase):
     prints out the longest chain number for the current string
   if there are no more unmatched words
     prints out the overall score when matched to Trump
-  
+
   Returns
   -------
   wordCount()

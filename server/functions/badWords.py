@@ -55,7 +55,7 @@ class BadWordsDB():
         passwd: string
             The password to authenticate access to server
         database: string
-            The database name user wants to connect to		
+            The database name user wants to connect to
 		'''
 
         self.host= host
