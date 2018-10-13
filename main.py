@@ -32,9 +32,10 @@ baddiesList = wordFilter.fetch() # Intialize Baddies List
 @client.event
 async def on_ready():
     '''
-    Asynchronous function that runs when bot is ready
+    Asynchronous function that runs when bot is ready, changes status, and prints message
     Reference: https://discordpy.readthedocs.io/en/latest/api.html#discord.on_ready
     '''
+    await client.change_presence(game=discord.Game(name='with your grades bwahahaha'))
     print("Bot is online")
 
 # -------------------------------

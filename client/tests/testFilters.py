@@ -1,7 +1,7 @@
 import unittest
-from client.functions.filter import run, baddiesBasic
+from client.functions.filters import run, baddiesBasic
 
-class TestFilter(unittest.TestCase):
+class TestFilters(unittest.TestCase):
     '''
     Tests to see if the filter works
     '''

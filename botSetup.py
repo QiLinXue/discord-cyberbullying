@@ -1,5 +1,6 @@
 # Discord Imports
 from discord.ext.commands import Bot
+import discord
 import os
 
 # Load Bot
