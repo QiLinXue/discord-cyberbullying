@@ -110,7 +110,7 @@ async def on_message(message):
     
     # Filters Messages
     elif not message.author.name == "Mr Seidel":
-        vulgar_confidence = sqlFilter.run(inputText,baddiesList)
+        vulgar_confidence = filters.run(inputText,baddiesList)
         if vulgar_confidence == 1:
             await client.send_message(message.channel, "**Hey!** You can't send that message here! Confidence: 100%")
         elif vulgar_confidence == 0.5:
