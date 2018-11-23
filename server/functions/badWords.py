@@ -10,7 +10,7 @@ class BadWordsDB():
         The host name of the server (could be local or external)
     user: string
         The user connecting to the server
-    passwd: string
+    password: string
         The password to authenticate access to server
     database: string
         The database name user wants to connect to
@@ -42,7 +42,7 @@ class BadWordsDB():
     # Import database username and password
     from serverSetup import DBUSER,DBPASS
 
-    def __init__(self,host,user,passwd,database):
+    def __init__(self,host,user,password,database):
         '''
 		Constructor to build the bad words object
 
@@ -52,7 +52,7 @@ class BadWordsDB():
             The host name of the server (could be local or external)
         user: string
             The user connecting to the server
-        passwd: string
+        password: string
             The password to authenticate access to server
         database: string
             The database name user wants to connect to
@@ -60,7 +60,7 @@ class BadWordsDB():
 
         self.host= host
         self.user = user
-        self.passwd = passwd
+        self.password = password
         self.database = database
 
     def connect(self):
@@ -74,7 +74,7 @@ class BadWordsDB():
         self.mydb = mysql.connector.connect(
             host=self.host,
             user=self.user,
-            passwd=self.passwd,
+            password=self.password,
             database=self.database
         )
         self.cursor = self.mydb.cursor()
