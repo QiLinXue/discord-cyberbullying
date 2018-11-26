@@ -145,7 +145,6 @@ class BadWordsDB():
             A concatted list of bad words
         '''
         baddies = self.fetch()
-
         return ' '.join(baddies)
 
     def insert(self,targetWord,badWordArray):
@@ -168,8 +167,9 @@ class BadWordsDB():
 
             sqlFormula = "INSERT INTO badwords (word, badness) VALUE (%s,%s)"
             word = (self.escapeString(targetWord.lower()),1)
-            
+            print(self.cursor,self.escapeString(targetWord.lower()))
             self.cursor.execute(sqlFormula,word)
+            self.mydb.commit()
             self.close()
 
         return
@@ -193,6 +193,8 @@ class BadWordsDB():
         sqlFormula = self.escapeString(sqlFormula)
 
         self.cursor.execute(sqlFormula)
+        self.mydb.commit()
+
         self.close()
 
         return
