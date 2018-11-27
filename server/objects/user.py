@@ -9,4 +9,3 @@ class User:
 
     def insert(self):
         self.userDB.insert(self)
-        print("hi?")
