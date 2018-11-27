@@ -36,17 +36,14 @@ baddiesList = wordFilter.fetch() # Intialize Baddies List
 # -------------------------------
 
 users = []
-userNames = []
+userIDs = []
 
 userDatabase = userDB.UserDB("us-cdbr-iron-east-01.cleardb.net",DBUSER,DBPASS,"heroku_5e695080c7ef107")
 
 for u in userDatabase.fetch():
-    users.append(user.User(u[0],u[1],userDatabase))
-    userNames.append(u[0])
+    users.append(user.User(u[0],u[1],userDatabase,u[2]))
+    userIDs.append(u[0])
 
-print(len(users))
-
-print(userDatabase.fetch())
 @client.event
 async def on_ready():
     '''
@@ -84,14 +81,16 @@ async def on_message(message):
 
     global baddiesList
     global users
+
     inputText = message.content # The Message Sent (str)
 
-    if str(message.author.id) not in userNames:
-        newUser = user.User(str(message.author.id),str(message.author),userDatabase)
+    if str(message.author.id) not in userIDs:
+        newUser = user.User(str(message.author.id),str(message.author),userDatabase,0)
         users.append(newUser)
-        userNames.append(str(message.author.id))
+        userIDs.append(str(message.author.id))
         newUser.insert()
-        print(message.author)
+
+    currentUser = users[userIDs.index(message.author.id)]
 
     # -------------------------------
     # ------- Experimental ----------
@@ -101,6 +100,12 @@ async def on_message(message):
         for u in users:
             await client.send_message(message.channel, u.display())
 
+    if inputText.startswith("!swears"):
+        if len(message.mentions) == 0:
+            await client.send_message(message.channel, currentUser.swearCount)
+        else:
+            mentionedUser = users[userIDs.index(message.mentions[0].id)]
+            await client.send_message(message.channel, mentionedUser.swearCount)
     # -------------------------------
     # -------- Fun Things -----------
     # -------------------------------
@@ -146,7 +151,8 @@ async def on_message(message):
     elif not message.author.name == "Mr Seidel":
         vulgar_confidence = filters.run(inputText,baddiesList)
         if vulgar_confidence == 1:
-            await client.send_message(message.channel, "**Hey!** You can't send that message here! Confidence: 100%")
+            currentUser.updateSwears()
+            await client.send_message(message.channel, "Hey! You can't send that message here! Confidence: 100%")
         elif vulgar_confidence == 0.5:
             await client.send_message(message.channel, "**Hey!** You can't send that message here! Confidence: 50%")
     

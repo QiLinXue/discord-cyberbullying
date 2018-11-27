@@ -10,10 +10,12 @@ create table if not exists badwords (
 
 create table if not exists userList (
     userID      text not null,
-    username    text not null
+    username    text not null,
+    swearCount      int  not null
 );
 
-INSERT INTO badwords (word, badness) VALUE ("fuck",1);
+-- INSERT INTO badwords (word, badness) VALUE ("fuck",1);
+-- INSERT INTO userList (userID, username, swearCount) VALUE ("fuck","asd",3);
+
 -- INSERT INTO userList (userID, username) VALUE ("fuck","asd");
--- INSERT INTO userList (userID, username) VALUE ("fuck","asd");
--- UPDATE userList SET userID = "asdf" WHERE userID = "fuck";
+-- UPDATE userList SET swearCount = swearCount + 1 WHERE userID = "fuck";

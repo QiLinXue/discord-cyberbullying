@@ -120,3 +120,15 @@ class UserDB():
         return myresults
         
         # UPDATE `table_name` SET `column_name` = `new_value' [WHERE condition];
+    
+    def updateSwears(self, user):
+    
+        self.connect()
+
+        sqlFormula = "UPDATE userList SET swearCount = swearCount + 1 WHERE userID = %s" % (user.id)
+        # word = (self.escapeString(user.id))
+        self.cursor.execute(sqlFormula)
+        self.mydb.commit()
+        self.close()
+
+        return
