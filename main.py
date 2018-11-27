@@ -42,7 +42,7 @@ userDatabase = userDB.UserDB("us-cdbr-iron-east-01.cleardb.net",DBUSER,DBPASS,"h
 
 for u in userDatabase.fetch():
     users.append(user.User(u[0],u[1],userDatabase))
-    userNames.append(u[1])
+    userNames.append(u[0])
 
 print(len(users))
 
