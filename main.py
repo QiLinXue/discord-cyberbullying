@@ -24,13 +24,29 @@ from server.imports import * # server imports
 import discord
 
 # -------------------------------
-# ------- Intialization ---------
+# ------- Initialization --------
 # -------------------------------
 
 print("Starting up...") # Notify file was run
 wordFilter = badWords.BadWordsDB("us-cdbr-iron-east-01.cleardb.net",DBUSER,DBPASS,"heroku_5e695080c7ef107") # Initialize Variables
 baddiesList = wordFilter.fetch() # Intialize Baddies List
+    
+# -------------------------------
+# -------- Class Setup ----------
+# -------------------------------
 
+users = []
+userNames = []
+
+userDatabase = userDB.UserDB("us-cdbr-iron-east-01.cleardb.net",DBUSER,DBPASS,"heroku_5e695080c7ef107")
+
+for u in userDatabase.fetch():
+    users.append(user.User(u[0],u[1],userDatabase))
+    userNames.append(u[1])
+
+print(len(users))
+
+print(userDatabase.fetch())
 @client.event
 async def on_ready():
     '''
@@ -67,7 +83,23 @@ async def on_message(message):
     # -------------------------------
 
     global baddiesList
+    global users
     inputText = message.content # The Message Sent (str)
+
+    if str(message.author.id) not in userNames:
+        newUser = user.User(str(message.author.id),str(message.author),userDatabase)
+        users.append(newUser)
+        userNames.append(str(message.author.id))
+        newUser.insert()
+        print(message.author)
+
+    # -------------------------------
+    # ------- Experimental ----------
+    # -------------------------------
+
+    if inputText.startswith("!names"):
+        for u in users:
+            await client.send_message(message.channel, u.display())
 
     # -------------------------------
     # -------- Fun Things -----------
