@@ -11,7 +11,8 @@ create table if not exists badwords (
 create table if not exists userList (
     userID      text not null,
     username    text not null,
-    swearCount      int  not null
+    swearCount      int  not null,
+    reportStats     int
 );
 
 -- INSERT INTO badwords (word, badness) VALUE ("fuck",1);

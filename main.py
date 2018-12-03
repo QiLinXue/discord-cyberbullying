@@ -83,12 +83,16 @@ async def on_message(message):
     global users
 
     inputText = message.content # The Message Sent (str)
-
+    print(inputText.split())
     if str(message.author.id) not in userIDs:
-        newUser = user.User(str(message.author.id),str(message.author),userDatabase,0)
+        if "mr seidel" in [y.name.lower() for y in message.author.roles]:
+            newUser = user.Seidelion(str(message.author.id),str(message.author),userDatabase,0,0)
+        else:
+            newUser = user.User(str(message.author.id),str(message.author),userDatabase,0)
         users.append(newUser)
         userIDs.append(str(message.author.id))
         newUser.insert()
+
 
     currentUser = users[userIDs.index(message.author.id)]
 
@@ -104,11 +108,17 @@ async def on_message(message):
         if len(message.mentions) == 0:
             await client.send_message(message.channel, currentUser.swearCount)
         else:
-            mentionedUser = users[userIDs.index(message.mentions[0].id)]
-            await client.send_message(message.channel, mentionedUser.swearCount)
+            try:
+                mentionedUser = users[userIDs.index(message.mentions[0].id)]
+                await client.send_message(message.channel, mentionedUser.swearCount)
+            except(ValueError):
+                await client.send_message(message.channel,"This user does not exist")
+            
     # -------------------------------
     # -------- Fun Things -----------
     # -------------------------------
+    if "Quick, type 'duck'" in inputText:
+        await client.send_message(message.channel, "duck")
 
     if inputText.startswith("!trump") and inputText.count(' ') > 0:
         mes = inputText.split(' ', 1)[1]
@@ -153,8 +163,7 @@ async def on_message(message):
         if vulgar_confidence == 1:
             currentUser.updateSwears()
             await client.send_message(message.channel, "Hey! You can't send that message here! Confidence: 100%")
-        elif vulgar_confidence == 0.5:
-            await client.send_message(message.channel, "**Hey!** You can't send that message here! Confidence: 50%")
+            # await client.send_message(discord.utils.get())
     
     if inputText.startswith("!ping"):
         await client.send_message(message.channel, ":ping_pong: pong!")
