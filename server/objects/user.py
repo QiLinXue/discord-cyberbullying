@@ -61,7 +61,7 @@ class User:
         Returns
         -------
         None
-        ''''
+        '''
         self.userDB.insert(self)
 
     def updateSwears(self):

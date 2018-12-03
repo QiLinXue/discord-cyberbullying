@@ -1,5 +1,5 @@
 from server.objects.user import User
-class seidelions(User):
+class Seidelion(User):
     '''
     
     A User object that holdS information about a specific user in a specific server

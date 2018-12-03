@@ -71,7 +71,11 @@ async def on_message(message):
     !delete [str]: deletes the string from the list of bad words
     !print: sends out the current bad words
     !ping: sends message confirming on_message is successfully run
-    
+    !names: list out all names
+    !swears: list out swears for current user
+    !swears [user object]: list out swears for that user
+    !report: reports a message
+
     ..note:: The function also constantly looks for bad words contained within message,
                 outputs a message if it violates the conditions
     '''
@@ -85,8 +89,8 @@ async def on_message(message):
     inputText = message.content # The Message Sent (str)
     print(inputText.split())
     if str(message.author.id) not in userIDs:
-        if "mr seidel" in [y.name.lower() for y in message.author.roles]:
-            newUser = user.Seidelion(str(message.author.id),str(message.author),userDatabase,0,0)
+        if "seidelion" in [y.name.lower() for y in message.author.roles]:
+            newUser = seidelions.Seidelion(str(message.author.id),str(message.author),userDatabase,0,0)
         else:
             newUser = user.User(str(message.author.id),str(message.author),userDatabase,0)
         users.append(newUser)
@@ -99,6 +103,7 @@ async def on_message(message):
     # -------------------------------
     # ------- Experimental ----------
     # -------------------------------
+
 
     if inputText.startswith("!names"):
         for u in users:
@@ -113,7 +118,12 @@ async def on_message(message):
                 await client.send_message(message.channel, mentionedUser.swearCount)
             except(ValueError):
                 await client.send_message(message.channel,"This user does not exist")
-            
+    
+    # if inputText.startswith("!report") and inputText.count(' ') > 0:
+    #     if "seidelion" in [y.name.lower() for y in message.author.roles]:
+    #         admin_channel = discord.utils.get(server.channels, name="administration", type="ChannelType.text") 
+    #         await client.send_message(admin_channel,currentUser.report(inputText.split(' ', 1)[1]))
+
     # -------------------------------
     # -------- Fun Things -----------
     # -------------------------------
