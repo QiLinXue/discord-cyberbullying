@@ -1,4 +1,4 @@
 discord.py==0.16.12
 discord==0.0.2
-python-dotenv==0.9.1
+python-dotenv==0.10.1
 mysql-connector-python==8.0.13
