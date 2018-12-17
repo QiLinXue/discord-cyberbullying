@@ -119,10 +119,11 @@ async def on_message(message):
             except(ValueError):
                 await client.send_message(message.channel,"This user does not exist")
     
-    # if inputText.startswith("!report") and inputText.count(' ') > 0:
-    #     if "seidelion" in [y.name.lower() for y in message.author.roles]:
-    #         admin_channel = discord.utils.get(server.channels, name="administration", type="ChannelType.text") 
-    #         await client.send_message(admin_channel,currentUser.report(inputText.split(' ', 1)[1]))
+    if inputText.startswith("!report") and inputText.count(' ') > 0:
+        if "seidelion" in [y.name.lower() for y in message.author.roles]:
+            admin_channel = discord.Object(id='517393346432335872')
+            print(type(currentUser))
+            await client.send_message(admin_channel,currentUser.report(inputText.split(' ', 1)[1]))
 
     # -------------------------------
     # -------- Fun Things -----------
