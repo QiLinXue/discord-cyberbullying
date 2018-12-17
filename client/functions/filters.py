@@ -26,7 +26,7 @@ def run(phrase,baddies):
         0 if there are no bad words
         1 if there are bad words
     '''
-    for word in phrase.split(" "):
+    for word in phrase.split():
         if word.lower() in baddies:
             return 1
 
