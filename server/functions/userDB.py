@@ -87,8 +87,8 @@ class UserDB():
 
         self.connect()
 
-        sqlFormula = "INSERT INTO userList (userID, username) VALUE (%s,%s)"
-        word = (self.escapeString(user.id),self.escapeString(user.name))
+        sqlFormula = "INSERT INTO userList (userID, username, perms) VALUE (%s,%s,%s)"
+        word = (self.escapeString(user.id),self.escapeString(user.name),self.escapeString(user.perms))
         self.cursor.execute(sqlFormula,word)
         self.mydb.commit()
         self.close()

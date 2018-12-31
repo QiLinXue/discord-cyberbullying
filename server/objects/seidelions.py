@@ -16,6 +16,8 @@ class Seidelion(User):
         The number of times the user swore
     reportStats: int
         The number of times the seidelon reported a message
+    perms: string
+        The permissions
 
     Methods
     -------
@@ -28,8 +30,8 @@ class Seidelion(User):
     report(messageId: str) -> void
         reports the message to administrators
     '''
-    def __init__(self,identification,name,userDB,swearCount,reportStats):
-        super().__init__(identification,name,userDB,swearCount)
+    def __init__(self,identification,name,userDB,swearCount,perms,reportStats):
+        super().__init__(identification,name,userDB,swearCount,perms)
         self.reportStats = reportStats
 
     def display(self):

@@ -12,7 +12,9 @@ class User:
         The database in which the user is connected to
     swearCount: int
         The number of times the user swore
-
+    perms: string
+        The permissions
+    
     Methods
     -------
     display() -> str
@@ -22,7 +24,7 @@ class User:
     updateSwears() -> None
         updates the user database on number of swears by user    
     '''
-    def __init__(self,identification,name,userDB,swearCount):
+    def __init__(self,identification,name,userDB,swearCount,perms):
         '''
 		Constructor to build the bad words object
 
@@ -41,7 +43,7 @@ class User:
         self.name = name
         self.userDB = userDB
         self.swearCount = swearCount
-        print(type(self.id),type(self.name),type(self.userDB),type(swearCount))
+        self.perms = perms
 
     def display(self):
         '''

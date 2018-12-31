@@ -41,7 +41,11 @@ userIDs = []
 userDatabase = userDB.UserDB("us-cdbr-iron-east-01.cleardb.net",DBUSER,DBPASS,"heroku_5e695080c7ef107")
 
 for u in userDatabase.fetch():
-    users.append(user.User(u[0],u[1],userDatabase,u[2]))
+    if u[4] == "Seidelion":
+        users.append(seidelions.Seidelion(u[0],u[1],userDatabase,u[2],"Seidelion",0))
+    else:
+        users.append(user.User(u[0],u[1],userDatabase,u[2],"User"))
+
     userIDs.append(u[0])
 
 @client.event
@@ -87,12 +91,11 @@ async def on_message(message):
     global users
 
     inputText = message.content # The Message Sent (str)
-    print(inputText.split())
     if str(message.author.id) not in userIDs:
         if "seidelion" in [y.name.lower() for y in message.author.roles]:
-            newUser = seidelions.Seidelion(str(message.author.id),str(message.author),userDatabase,0,0)
+            newUser = seidelions.Seidelion(str(message.author.id),str(message.author),userDatabase,0,"Seidelion",0)
         else:
-            newUser = user.User(str(message.author.id),str(message.author),userDatabase,0)
+            newUser = user.User(str(message.author.id),str(message.author),userDatabase,0,"User")
         users.append(newUser)
         userIDs.append(str(message.author.id))
         newUser.insert()
@@ -170,12 +173,20 @@ async def on_message(message):
     
     # Filters Messages
     elif not message.author.name == "Mr Seidel":
-        vulgar_confidence = filters.run(inputText,baddiesList)
+        vulgar_confidence = filters.swears(inputText,baddiesList)
+        positivity_confidence = filters.polarity(inputText)
         if vulgar_confidence == 1:
             currentUser.updateSwears()
-            await client.send_message(message.channel, "Hey! You can't send that message here! Confidence: 100%")
+            await client.send_message(message.channel, "Hey! You can't send that message here!")
             # await client.send_message(discord.utils.get())
-    
+        
+        if positivity_confidence < 0:
+            currentUser.updateSwears()
+            confidence = -100*positivity_confidence
+            await client.send_message(message.channel, "Hey! Don't be such a downer! Confidence: %s %%" % confidence)
+            # await client.send_message(discord.utils.get())
+        
+        print(positivity_confidence)
     if inputText.startswith("!ping"):
         await client.send_message(message.channel, ":ping_pong: pong!")
 

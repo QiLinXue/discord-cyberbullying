@@ -1,3 +1,5 @@
+from textblob import TextBlob
+
 f_input = open("data/baddies-basic.txt","r")
 baddiesBasic = f_input.readlines()
 f_input.close()
@@ -9,7 +11,25 @@ f_input.close()
 baddiesBasic = [x.strip() for x in baddiesBasic]
 baddiesFull = [x.strip() for x in baddiesFull]
 
-def run(phrase,baddies):
+def polarity(phrase):
+    '''
+    Determines the phrase's polarity
+
+    Parameters
+    ----------
+    phrase: str
+        the phrase to check for profanity
+
+    Returns
+    -------
+    float
+        any float bounded by -1 and 1
+        -1 is the most negative
+        1 is the most positive
+    ''' 
+    return TextBlob(phrase).sentiment.polarity
+
+def swears(phrase,baddies):
     '''
     Checks if a word is in the swear list
 

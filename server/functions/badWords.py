@@ -167,7 +167,6 @@ class BadWordsDB():
 
             sqlFormula = "INSERT INTO badwords (word, badness) VALUE (%s,%s)"
             word = (self.escapeString(targetWord.lower()),1)
-            print(self.cursor,self.escapeString(targetWord.lower()))
             self.cursor.execute(sqlFormula,word)
             self.mydb.commit()
             self.close()
