@@ -123,16 +123,22 @@ async def on_message(message):
     
     if inputText.startswith("!report") and inputText.count(' ') > 0:
         if "seidelion" in [y.name.lower() for y in message.author.roles]:
+            reportID = inputText.split(' ', 1)[1]
+            reportContent = None
+            for channel in client.get_all_channels():
+                try:
+                    reportContent = await client.get_message(channel,reportID)
+                except:
+                    continue
             admin_channel = discord.Object(id='517393346432335872')
-            print(type(currentUser))
-            await client.send_message(admin_channel,currentUser.report(inputText.split(' ', 1)[1]))
-
+            await client.send_message(admin_channel,currentUser.report(reportID,reportContent.content))
 
     # -------------------------------
     # -------- Work Things ----------
     # -------------------------------
 
     # Add Role
+    # NOTE clean this part up LOL
     elif inputText.startswith("!addRole") and inputText.count(' ') == 2:
 
         if len(message.mentions) == 1 and inputText.split()[2].lower() in [y.name.lower() for y in message.server.roles]:

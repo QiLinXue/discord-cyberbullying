@@ -46,7 +46,7 @@ class Seidelion(User):
         description = "Name: %s Role: 'Seidelion'" % self.name 
         return description
 
-    def report(self,messageID):
+    def report(self,messageID,messageContent):
         '''
         Reports the message to the specific channel
 
@@ -54,12 +54,14 @@ class Seidelion(User):
         ----------
         messageID: str
             the id of the message that is reported
+        messageContent: str
+            the content of the message that is reported
         
         Returns
         -------
         message: str
             the message to be sent
         '''
-        message = "There has been an instance of cyberbullying. Message id is %s" % messageID
+        message = "There has been a suspected instance of cyberbullying. Message id is %s. The content is: \n `%s`" % (messageID,messageContent)
         self.reportStats += 1
         return message
