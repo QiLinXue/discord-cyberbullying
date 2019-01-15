@@ -202,7 +202,7 @@ async def on_message(message):
         await client.send_message(message.channel,wordFilter.printAll())
     
     # Filters Messages
-    elif not message.author.name == "Mr Seidel":
+    elif not currentUser.perms == "Seidelion":
         vulgar_confidence = filters.swears(inputText,baddiesList)
         positivity_confidence = filters.polarity(inputText)
         if vulgar_confidence == 1:
