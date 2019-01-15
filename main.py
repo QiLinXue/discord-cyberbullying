@@ -142,8 +142,20 @@ async def on_message(message):
     # -------- Work Things ----------
     # -------------------------------
 
+    # Add Role
+    elif inputText.startswith("!addRole") and inputText.count(' ') == 2:
+        # print([y.name.lower() for y in message.server.roles])
+        # print(inputText[2].lower())
+        if len(message.mentions) == 1 and inputText.split()[2].lower() in [y.name.lower() for y in message.server.roles]:
+            user = message.server.get_member(message.mentions[0].id)
+            role = message.server.roles[([y.name.lower() for y in message.server.roles].index(inputText.split()[2].lower()))]
+            await client.add_roles(user, role)
+            await client.send_message(message.channel, "Successfully assigned role %s to %s" % (role, user))
+        else:
+            await client.send_message(message.channel, "There's a problem with your input. Please make sure it's `!addRole @user rolename`")
+
     # Clears Messages
-    if inputText.startswith("!clear") and inputText.count(' ') > 0:
+    elif inputText.startswith("!clear") and inputText.count(' ') > 0:
         await clear.run(message,client)
     
     # Add Bad Words
