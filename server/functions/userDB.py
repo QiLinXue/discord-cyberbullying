@@ -132,3 +132,15 @@ class UserDB():
         self.close()
 
         return
+
+    def updateRole(self, user, role):
+
+        self.connect()
+
+        sqlFormula = "UPDATE userList SET perms = '%s' WHERE userID = %s" % (role,user.id)
+        print(sqlFormula)
+        self.cursor.execute(sqlFormula)
+        self.mydb.commit()
+        self.close()
+
+        return

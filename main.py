@@ -102,7 +102,6 @@ async def on_message(message):
 
 
     currentUser = users[userIDs.index(message.author.id)]
-
     # -------------------------------
     # ------- Experimental ----------
     # -------------------------------
@@ -128,15 +127,6 @@ async def on_message(message):
             print(type(currentUser))
             await client.send_message(admin_channel,currentUser.report(inputText.split(' ', 1)[1]))
 
-    # -------------------------------
-    # -------- Fun Things -----------
-    # -------------------------------
-    if "Quick, type 'duck'" in inputText:
-        await client.send_message(message.channel, "duck")
-
-    if inputText.startswith("!trump") and inputText.count(' ') > 0:
-        mes = inputText.split(' ', 1)[1]
-        await client.send_message(message.channel, trumpCount.run(mes))
 
     # -------------------------------
     # -------- Work Things ----------
@@ -144,15 +134,37 @@ async def on_message(message):
 
     # Add Role
     elif inputText.startswith("!addRole") and inputText.count(' ') == 2:
-        # print([y.name.lower() for y in message.server.roles])
-        # print(inputText[2].lower())
+
         if len(message.mentions) == 1 and inputText.split()[2].lower() in [y.name.lower() for y in message.server.roles]:
-            user = message.server.get_member(message.mentions[0].id)
+            tempUser = message.server.get_member(message.mentions[0].id)
             role = message.server.roles[([y.name.lower() for y in message.server.roles].index(inputText.split()[2].lower()))]
-            await client.add_roles(user, role)
-            await client.send_message(message.channel, "Successfully assigned role %s to %s" % (role, user))
+            await client.add_roles(tempUser, role)
+            await client.send_message(message.channel, "Successfully assigned role %s to %s" % (role, tempUser))
+
+            if inputText.split()[2] == "Seidelion":
+                tempUserObject = users[userIDs.index(message.mentions[0].id)]
+                tempUserObject.updateRole("Seidelion")
+
+                a = users[userIDs.index(message.mentions[0].id)] = seidelions.Seidelion(tempUserObject.id,tempUserObject.name,userDatabase,tempUserObject.swearCount,"Seidelion",0)
         else:
             await client.send_message(message.channel, "There's a problem with your input. Please make sure it's `!addRole @user rolename`")
+
+    # Remove Role
+    elif inputText.startswith("!removeRole") and inputText.count(' ') == 2:
+
+        if len(message.mentions) == 1 and inputText.split()[2].lower() in [y.name.lower() for y in message.server.roles]:
+            tempUser = message.server.get_member(message.mentions[0].id)
+            role = message.server.roles[([y.name.lower() for y in message.server.roles].index(inputText.split()[2].lower()))]
+            await client.remove_roles(tempUser, role)
+            await client.send_message(message.channel, "Successfully removed role %s from %s" % (role, tempUser))
+
+            if inputText.split()[2] == "Seidelion":
+                tempUserObject = users[userIDs.index(message.mentions[0].id)]
+                tempUserObject.updateRole("User")
+
+                a = users[userIDs.index(message.mentions[0].id)] = user.User(tempUserObject.id,tempUserObject.name,userDatabase,tempUserObject.swearCount,"User")
+        else:
+            await client.send_message(message.channel, "There's a problem with your input. Please make sure it's `!removeRole @user rolename`")
 
     # Clears Messages
     elif inputText.startswith("!clear") and inputText.count(' ') > 0:

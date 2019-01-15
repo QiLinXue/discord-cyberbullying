@@ -77,3 +77,6 @@ class User:
         '''
         self.userDB.updateSwears(self)
         self.swearCount = self.swearCount + 1
+
+    def updateRole(self,role):
+        self.userDB.updateRole(self,role)
