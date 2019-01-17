@@ -5,7 +5,7 @@
 #
 # Author:      QiLin
 # Created:     31-Sep-2018
-# Updated:     13-Oct-2018
+# Updated:     17-Jan-2019
 #-----------------------------------------------------------------------------
 
 # pylint: disable=W0614
@@ -30,7 +30,10 @@ import discord
 print("Starting up...") # Notify file was run
 wordFilter = badWords.BadWordsDB("us-cdbr-iron-east-01.cleardb.net",DBUSER,DBPASS,"heroku_5e695080c7ef107") # Initialize Variables
 baddiesList = wordFilter.fetch() # Intialize Baddies List
-    
+
+# for i in filters.baddiesFull:
+#     wordFilter.insert(i,baddiesList)
+#     print(i)
 # -------------------------------
 # -------- Class Setup ----------
 # -------------------------------
@@ -60,7 +63,8 @@ async def on_ready():
 # -------------------------------
 # -------- Functions ------------
 # -------------------------------
-
+admin_channel = discord.Object(id='517393346432335872')
+reporting_channel = discord.Object(id="524369729796833280")
 @client.event
 async def on_message(message):
     '''
@@ -89,6 +93,7 @@ async def on_message(message):
 
     global baddiesList
     global users
+    global admin_channel
 
     inputText = message.content # The Message Sent (str)
     if str(message.author.id) not in userIDs:
@@ -130,7 +135,6 @@ async def on_message(message):
                     reportContent = await client.get_message(channel,reportID)
                 except:
                     continue
-            admin_channel = discord.Object(id='517393346432335872')
             await client.send_message(admin_channel,currentUser.report(reportID,reportContent.content))
 
     # -------------------------------
@@ -199,26 +203,32 @@ async def on_message(message):
 
     # Print Bad Words
     elif inputText.startswith("!print"):
+        print(wordFilter.printAll())
         await client.send_message(message.channel,wordFilter.printAll())
     
     # Filters Messages
-    elif not currentUser.perms == "Seidelion":
+    # elif not currentUser.perms == "Seidelion":
+    elif not message.author.name =="Mr Seidel": # TODO switch to id
         vulgar_confidence = filters.swears(inputText,baddiesList)
         positivity_confidence = filters.polarity(inputText)
-        if vulgar_confidence == 1:
-            currentUser.updateSwears()
-            await client.send_message(message.channel, "Hey! You can't send that message here!")
-            # await client.send_message(discord.utils.get())
-        
+
         if positivity_confidence < 0:
             currentUser.updateSwears()
             confidence = -100*positivity_confidence
             await client.send_message(message.channel, "Hey! Don't be such a downer! Confidence: %s %%" % confidence)
+            await client.send_message(reporting_channel, "!report %s" % message.id)
             # await client.send_message(discord.utils.get())
         
+        elif vulgar_confidence == 1 and positivity_confidence < 0.1:
+            currentUser.updateSwears()
+            await client.send_message(message.channel, "Hey! You can't send that message here!")
+            await client.send_message(reporting_channel, "!report %s" % message.id)
+            # await client.send_message(discord.utils.get())
+    
         print(positivity_confidence)
     if inputText.startswith("!ping"):
         await client.send_message(message.channel, ":ping_pong: pong!")
 
+    print(message.author.name)
 # Run the Bot
 client.run(TOKEN)
