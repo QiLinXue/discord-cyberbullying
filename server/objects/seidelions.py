@@ -1,4 +1,5 @@
 from server.objects.user import User
+import discord
 class Seidelion(User):
     '''
     
@@ -59,9 +60,13 @@ class Seidelion(User):
         
         Returns
         -------
-        message: str
+        message: embed
             the message to be sent
         '''
-        message = "There has been a suspected instance of cyberbullying. Message id is %s. The content is: \n `%s`" % (messageID,messageContent)
+        message = discord.Embed(title="Cyberbullying Report", description="There has been a suspected instance of cyberbullying", color=0x00ff00)
+        message.add_field(name="ID", value=messageID, inline=False)
+        message.add_field(name="Message (Original)", value=messageContent.content, inline=False)
+        message.add_field(name="Channel ID", value=messageContent.channel.id, inline=False)
+        message.add_field(name="Author", value=messageContent.author, inline=False)
         self.reportStats += 1
         return message
