@@ -1,3 +1,5 @@
+# pylint: disable=W0614
+
 from server.objects.user import User
 import discord
 from client.imports import * # client imports
