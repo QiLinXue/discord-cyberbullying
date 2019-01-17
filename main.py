@@ -118,7 +118,21 @@ async def on_message(message):
 
     if inputText.startswith("!swears"):
         if len(message.mentions) == 0:
-            await client.send_message(message.channel, currentUser.swearCount)
+
+            '''
+            Quicksort Implementation
+            '''
+            def quickSort(usersArr):
+                if len(usersArr)==0: return []
+                if len(usersArr)==1: return usersArr
+                left = [i for i in usersArr[1:] if i.swearCount > usersArr[0].swearCount]
+                right = [i for i in usersArr[1:] if i.swearCount <= usersArr[0].swearCount]
+                return quickSort(left)+[usersArr[0]]+quickSort(right)
+
+            users = quickSort(users)
+            for u in users:
+                await client.send_message(message.channel, "Swear Count for %s - %s" % (u.name,u.swearCount))
+
         else:
             try:
                 mentionedUser = users[userIDs.index(message.mentions[0].id)]
@@ -129,14 +143,13 @@ async def on_message(message):
     if inputText.startswith("!report") and inputText.count(' ') > 0:
         if "seidelion" in [y.name.lower() for y in message.author.roles]:
             reportID = inputText.split(' ', 1)[1]
-            reportContent = None
+            reportMessage = None
             for channel in client.get_all_channels():
                 try:
-                    reportContent = await client.get_message(channel,reportID)
+                    reportMessage = await client.get_message(channel,reportID)
                 except:
                     continue
-            await client.send_message(admin_channel,currentUser.report(reportID,reportContent.content))
-
+            await client.send_message(admin_channel,embed=currentUser.report(reportID,reportMessage))
     # -------------------------------
     # -------- Work Things ----------
     # -------------------------------
@@ -203,7 +216,6 @@ async def on_message(message):
 
     # Print Bad Words
     elif inputText.startswith("!print"):
-        print(wordFilter.printAll())
         await client.send_message(message.channel,wordFilter.printAll())
     
     # Filters Messages
@@ -214,6 +226,7 @@ async def on_message(message):
 
         if positivity_confidence < 0:
             currentUser.updateSwears()
+
             confidence = -100*positivity_confidence
             await client.send_message(message.channel, "Hey! Don't be such a downer! Confidence: %s %%" % confidence)
             await client.send_message(reporting_channel, "!report %s" % message.id)
@@ -226,9 +239,24 @@ async def on_message(message):
             # await client.send_message(discord.utils.get())
     
         print(positivity_confidence)
+
+    if message.author.name == "Mr Seidel" and message.channel.id == admin_channel.id:
+        reactions = ['👍','👎']
+        for emoji in reactions:
+            await client.add_reaction(message,emoji)
+        while True:
+            res = await client.wait_for_reaction(['👍'], message=message)
+            # await client.send_message(message.channel, '{0.user} reacted with {0.reaction.emoji}!'.format(res))
+            tempMesID = message.embeds[0]['fields'][0]["value"]
+            tempChanID = message.embeds[0]['fields'][2]["value"]
+
+            tempMsg = await client.get_message(discord.Object(id=tempChanID), tempMesID)
+            await client.delete_message(tempMsg)
+
     if inputText.startswith("!ping"):
         await client.send_message(message.channel, ":ping_pong: pong!")
 
-    print(message.author.name)
+# async def on_reaction_add(reaction,user):
+#     print(reaction)
 # Run the Bot
 client.run(TOKEN)
