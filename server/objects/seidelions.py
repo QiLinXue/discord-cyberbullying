@@ -1,5 +1,7 @@
 from server.objects.user import User
 import discord
+from client.imports import * # client imports
+
 class Seidelion(User):
     '''
     
@@ -68,5 +70,11 @@ class Seidelion(User):
         message.add_field(name="Message (Original)", value=messageContent.content, inline=False)
         message.add_field(name="Channel ID", value=messageContent.channel.id, inline=False)
         message.add_field(name="Author", value=messageContent.author, inline=False)
+
+        # Classification
+        q_negativityScore = filters.qClassifier_classify(messageContent.content)
+        message.add_field(name="Test Classifier (Bullying Probability)", value=q_negativityScore, inline=True)
+
+
         self.reportStats += 1
         return message

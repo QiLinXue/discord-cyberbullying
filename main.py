@@ -23,6 +23,7 @@ from server.imports import * # server imports
 
 import discord
 
+import time
 # -------------------------------
 # ------- Initialization --------
 # -------------------------------
@@ -232,26 +233,48 @@ async def on_message(message):
             await client.send_message(reporting_channel, "!report %s" % message.id)
             # await client.send_message(discord.utils.get())
         
-        elif vulgar_confidence == 1 and positivity_confidence < 0.1:
+        elif vulgar_confidence == 1 and positivity_confidence <= 0.1:
             currentUser.updateSwears()
             await client.send_message(message.channel, "Hey! You can't send that message here!")
             await client.send_message(reporting_channel, "!report %s" % message.id)
             # await client.send_message(discord.utils.get())
-    
+
+        if positivity_confidence > 0.6:
+            filters.qClassifier_train(inputText,'pos')
+
         print(positivity_confidence)
 
     if message.author.name == "Mr Seidel" and message.channel.id == admin_channel.id:
         reactions = ['👍','👎']
         for emoji in reactions:
             await client.add_reaction(message,emoji)
-        while True:
-            res = await client.wait_for_reaction(['👍'], message=message)
-            # await client.send_message(message.channel, '{0.user} reacted with {0.reaction.emoji}!'.format(res))
-            tempMesID = message.embeds[0]['fields'][0]["value"]
-            tempChanID = message.embeds[0]['fields'][2]["value"]
 
-            tempMsg = await client.get_message(discord.Object(id=tempChanID), tempMesID)
-            await client.delete_message(tempMsg)
+        time.sleep(2) # Wait for emojis to add
+
+        while True:
+            res = await client.wait_for_reaction(emoji=None, message=message)
+
+            if res.user.id == "495274911795773441": # Prevents time delay glitch where bot recognizes own reaction
+                print("intruder detected!")
+
+            elif res.reaction.emoji == '👍':
+                tempMesID = message.embeds[0]['fields'][0]["value"]
+                tempContent = message.embeds[0]['fields'][1]["value"]
+                tempChanID = message.embeds[0]['fields'][2]["value"]
+
+                # Delete Message
+                tempMsg = await client.get_message(discord.Object(id=tempChanID), tempMesID)
+                await client.delete_message(tempMsg)
+
+                # Train Classifier
+                print(tempContent)
+                filters.qClassifier_train(tempContent,'neg')
+
+            elif res.reaction.emoji == '👎':
+                tempContent = message.embeds[0]['fields'][1]["value"]
+
+                # Train Classifier
+                filters.qClassifier_train(tempContent,'pos')
 
     if inputText.startswith("!ping"):
         await client.send_message(message.channel, ":ping_pong: pong!")
