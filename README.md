@@ -24,7 +24,7 @@ Then, install requirements:
 pip install -r requirements.txt
 ```
 
-In the folder, there should be a folder named `.env.example`. Rename this file to `.env` and replace the placeholders with your private bot token, and database username and password. Any mySQL database should work, and a bot can be created at https://discordapp.com/developers/applications/. Under settings, click Bot. Then click "Build a Bot". Then click "Click to Reveal Token". DO NOT share this token with anyone.
+In the folder, there should be a folder named `.env.example`. Rename this file to `.env` and replace the placeholders with your private bot token, and database username and password. Any mySQL database should work, and a bot can be created at [https://discordapp.com/developers/applications/](https://discordapp.com/developers/applications/). Under settings, click Bot. Then click "Build a Bot". Then click "Click to Reveal Token". DO NOT share this token with anyone.
 
 Ensure there are NO spaces in the `.env` file. Before running, make sure to invite the bot into your server first.
 

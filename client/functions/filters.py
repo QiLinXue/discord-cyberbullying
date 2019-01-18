@@ -28,7 +28,7 @@ def polarity(phrase):
         any float bounded by -1 and 1
         -1 is the most negative
         1 is the most positive
-    ''' 
+    '''
     return TextBlob(phrase).sentiment.polarity
 
 def inittt():

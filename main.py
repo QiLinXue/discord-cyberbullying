@@ -169,7 +169,7 @@ async def on_message(message):
                 tempUserObject = users[userIDs.index(message.mentions[0].id)]
                 tempUserObject.updateRole("Seidelion")
 
-                a = users[userIDs.index(message.mentions[0].id)] = seidelions.Seidelion(tempUserObject.id,tempUserObject.name,userDatabase,tempUserObject.swearCount,"Seidelion",0)
+                users[userIDs.index(message.mentions[0].id)] = seidelions.Seidelion(tempUserObject.id,tempUserObject.name,userDatabase,tempUserObject.swearCount,"Seidelion",0)
         else:
             await client.send_message(message.channel, "There's a problem with your input. Please make sure it's `!addRole @user rolename`")
 
@@ -199,7 +199,7 @@ async def on_message(message):
         mes = inputText.split(' ', 1)[1]
         if mes in baddiesList:
             await client.send_message(message.channel, "Word already added")
-        else: 
+        else:
             wordFilter.insert(mes,baddiesList) # Run and get status
             await client.send_message(message.channel, "Successfully added %s to database" % mes)
             baddiesList.append(mes)
