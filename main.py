@@ -162,11 +162,11 @@ async def on_message(message):
                 await client.send_message(message.channel, "Successfully assigned role %s to %s" % (role, message.author))
 
                 # Add User Role for Mr Seidel
-                tempUser = message.server.get_member("495274911795773441")
+                tempUser = message.server.get_member(BOTID)
                 await client.add_roles(tempUser, role)
 
                 # Update User Database for Mr Seidel
-                tempUserObject = users[userIDs.index("495274911795773441")]
+                tempUserObject = users[userIDs.index(BOTID)]
                 tempUserObject.updateRole("Seidelion")
                 users[mentionedUser_index] = seidelions.Seidelion(tempUserObject.id,tempUserObject.name,userDatabase,tempUserObject.swearCount,"Seidelion",0)
                 await client.send_message(message.channel, "Successfully assigned role 'Seidelion' to self")
@@ -201,7 +201,7 @@ async def on_message(message):
         hasPermissions = currentUser.perms == "Seidelion"
 
         # Add Roles
-        if message.mentions[0].id == "495274911795773441":
+        if message.mentions[0].id == BOTID:
             await client.send_message(message.channel, "Sorry, but you can't edit a bot's roles.")
 
         elif inputText.startswith("!roleAdd") and isCorrectFormat and isRealRole and hasPermissions:
@@ -321,7 +321,7 @@ async def on_message(message):
             await client.send_message(reporting_channel, "!report %s" % message.id)
 
     # Classification Feedback Mechanism
-    if message.author.id == "495274911795773441" and message.channel.id == admin_channel.id and len(message.embeds) > 0:
+    if message.author.id == BOTID and message.channel.id == admin_channel.id and len(message.embeds) > 0:
         reactions = ['👍','👎']
         for emoji in reactions:
             await client.add_reaction(message,emoji)
@@ -330,7 +330,7 @@ async def on_message(message):
         while searching_for_a_meaning_in_life:
             res = await client.wait_for_reaction(emoji=None, message=message)
 
-            if res.user.id == "495274911795773441": # Prevents time delay glitch where bot recognizes own reaction
+            if res.user.id == BOTID: # Prevents time delay glitch where bot recognizes own reaction
                 continue
 
             elif res.reaction.emoji == '👍':
@@ -359,7 +359,6 @@ async def on_message(message):
                 try:
                     reportMessage = await client.get_message(channel,reportID)
                 except Exception as e:
-                    print(e)
                     continue
             await client.send_message(admin_channel,embed=currentUser.report(reportID,reportMessage))
 

@@ -14,6 +14,7 @@ DBHOST = os.getenv('DBHOST')
 DBUSER = os.getenv('DBUSER')
 DBPASS = os.getenv('DBPASS')
 DBNAME = os.getenv('DBNAME')
+BOTID = os.getenv('BOTID')
 
 # Setup Bad Word Database
 wordFilter = badWords.BadWordsDB(DBHOST,DBUSER,DBPASS,DBNAME) # Initialize Variables
