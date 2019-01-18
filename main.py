@@ -117,36 +117,70 @@ async def on_message(message):
     '''
     Experimental (testing)
     '''
+
+    '''
+    Administrative Functions
+    '''
+
     if inputText.startswith("!setup"):
         if hasNoChannel:
-            try:
+            # try:
+                # Reusable Components
                 server = message.server
                 everyone = discord.PermissionOverwrite(read_messages=False, send_messages=False)
                 mine = discord.PermissionOverwrite(read_messages=True)
+
+                # Create Seidelion Role
+                role = await client.create_role(message.server, name='Seidelion', colour=discord.Colour(0x0FF4C6))
+                await client.add_roles(message.author, role)
+                
+                # Create Administration Channel
                 await client.create_channel(server, 'administration', (server.default_role, everyone), (server.me, mine))
                 overwrite = discord.PermissionOverwrite(read_messages=True, send_messages=True)
                 rolesearch = discord.utils.get(server.roles, name="Seidelion")
                 await client.edit_channel_permissions(message.channel, rolesearch, overwrite)
                 await client.send_message(message.channel, "The 'administration' channel has been added!")
 
+                # Creating Reporting Channel
                 await client.create_channel(server, 'reporting', (server.default_role, everyone), (server.me, mine))
                 overwrite = discord.PermissionOverwrite(read_messages=True, send_messages=True)
                 rolesearch = discord.utils.get(server.roles, name="Seidelion")
                 await client.edit_channel_permissions(message.channel, rolesearch, overwrite)
                 await client.send_message(message.channel, "The 'reporting' channel has been added!")
 
-                role = await client.create_role(message.server, name='Seidelion', colour=discord.Colour(0x0FF4C6))
-                await client.add_roles(message.author, role)
+                # Add Role to Admin
+                currentUser.updateRole("Seidelion")
+
+                # Update User Database for Admin
+                currentUser = seidelions.Seidelion(currentUser.id,currentUser.name,userDatabase,currentUser.swearCount,"Seidelion",0)
                 await client.send_message(message.channel, "Successfully assigned role %s to %s" % (role, message.author))
 
-                currentUser.updateRole("Seidelion")
-                currentUser = seidelions.Seidelion(currentUser.id,currentUser.name,userDatabase,currentUser.swearCount,"Seidelion",0)
+                # Add User Role for Mr Seidel
+                tempUser = message.server.get_member("495274911795773441")
+                await client.add_roles(tempUser, role)
 
-            except Exception as e:
-                print(e)
-                await client.send_message(message.channel, "Oh no! Something went horrendously wrong.")
+                # Update User Database for Mr Seidel
+                tempUserObject = users[userIDs.index("495274911795773441")]
+                tempUserObject.updateRole("Seidelion")
+                users[mentionedUser_index] = seidelions.Seidelion(tempUserObject.id,tempUserObject.name,userDatabase,tempUserObject.swearCount,"Seidelion",0)
+                await client.send_message(message.channel, "Successfully assigned role 'Seidelion' to self")
+
+            # except Exception as e:
+            #     print(e)
+            #     await client.send_message(message.channel, "Oh no! Something went horrendously wrong.")
         else:
             await client.send_message("Server is already set up")
+   
+    # Basic Ping for troubleshooting
+    elif inputText.startswith("!ping"):
+        await client.send_message(message.channel, ":ping_pong: pong!")
+
+    # Clears Messages
+    elif inputText.startswith("!clear") and inputText.count(' ') > 0:
+        await clear.run(message,client)
+    
+    elif inputText == "!help":
+        await client.send_message(message.channel, on_message.__doc__)
     
     '''
     Functions relating to users
@@ -328,41 +362,12 @@ async def on_message(message):
                     print(e)
                     continue
             await client.send_message(admin_channel,embed=currentUser.report(reportID,reportMessage))
-    '''
-    Administrative Functions
-    '''
 
-    if inputText.startswith("!setup"):
-        if currentUser.perms == "Seidelion":
-            try:
-                server = message.server
-                everyone = discord.PermissionOverwrite(read_messages=False, send_messages=False)
-                mine = discord.PermissionOverwrite(read_messages=True)
-                await client.create_channel(server, 'administration', (server.default_role, everyone), (server.me, mine))
-                overwrite = discord.PermissionOverwrite(read_messages=True, send_messages=True)
-                rolesearch = discord.utils.get(server.roles, name="Seidelion")
-                await client.edit_channel_permissions(message.channel, rolesearch, overwrite)
-
-                await client.create_channel(server, 'reporting', (server.default_role, everyone), (server.me, mine))
-                overwrite = discord.PermissionOverwrite(read_messages=True, send_messages=True)
-                rolesearch = discord.utils.get(server.roles, name="Seidelion")
-                await client.edit_channel_permissions(message.channel, rolesearch, overwrite)
-            except Exception as e:
-                print(e)
-                await client.send_message("Oh no! Something went horrendously wrong.")
-        else:
-            await client.send_message("You tried to be cool, but you don't have the permisssions to do that!")
-   
-    # Basic Ping for troubleshooting
-    elif inputText.startswith("!ping"):
-        await client.send_message(message.channel, ":ping_pong: pong!")
-
-    # Clears Messages
-    elif inputText.startswith("!clear") and inputText.count(' ') > 0:
-        await clear.run(message,client)
-    
-    elif inputText == "!help":
-        await client.send_message(message.channel, on_message.__doc__)
+    # if inputText == "asidasidjh":
+    #     for i in message.server.channels:
+    #         if i.name == "administration" or i.name == "reporting":
+    #             await client.delete_channel(i)
+    #         print(i)
 # async def on_reaction_add(reaction,user):
 #     print(reaction)
 # Run the Bot
