@@ -44,6 +44,7 @@ Any mySQL server should work. Mine was on the cloud so I used [ClearDB MySQL] (h
 
 If you're name is Mr. Seidel, you can use the host/username/password/database details I emailed to you if you wish to save some time.
 
+Make sure to run `000-schema.sql` to initialize the tables.
 ## Running the bot
 
 ### Creating a server
