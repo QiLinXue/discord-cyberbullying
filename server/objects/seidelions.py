@@ -74,7 +74,7 @@ class Seidelion(User):
         message.add_field(name="Author", value=messageContent.author, inline=False)
 
         # Classification
-        q_negativityScore = filters.qClassifier_classify(messageContent.content)
+        q_negativityScore = classifiers.qClassifier_classify(messageContent.content)
         message.add_field(name="Test Classifier (Bullying Probability)", value=q_negativityScore, inline=True)
 
 

@@ -1,1 +1,1 @@
-from client.functions import filters, clear
+from client.classifiers import classifiers

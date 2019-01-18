@@ -40,7 +40,6 @@ async def on_message(message):
     Commands
     --------
     !trump [str]: fun command that returns how similar a string is to trump's tweets
-    !clear [int]: clears the specified number of messages from current channel
     !add [str]: adds the string to the list of bad words
     !delete [str]: deletes the string from the list of bad words
     !print: sends out the current bad words
@@ -133,7 +132,7 @@ async def on_message(message):
                 # Create Seidelion Role
                 role = await client.create_role(message.server, name='Seidelion', colour=discord.Colour(0x0FF4C6))
                 await client.add_roles(message.author, role)
-                
+
                 # Create Administration Channel
                 await client.create_channel(server, 'administration', (server.default_role, everyone), (server.me, mine))
                 overwrite = discord.PermissionOverwrite(read_messages=True, send_messages=True)
@@ -165,6 +164,9 @@ async def on_message(message):
                 users[mentionedUser_index] = seidelions.Seidelion(tempUserObject.id,tempUserObject.name,userDatabase,tempUserObject.swearCount,"Seidelion",0)
                 await client.send_message(message.channel, "Successfully assigned role 'Seidelion' to self")
 
+                # Initialize custom classifier
+                classifiers.qClassifier_init()
+                await client.send_message(message.channel, "Successfully created and reset custom classifier")
             # except Exception as e:
             #     print(e)
             #     await client.send_message(message.channel, "Oh no! Something went horrendously wrong.")
@@ -174,10 +176,6 @@ async def on_message(message):
     # Basic Ping for troubleshooting
     elif inputText.startswith("!ping"):
         await client.send_message(message.channel, ":ping_pong: pong!")
-
-    # Clears Messages
-    elif inputText.startswith("!clear") and inputText.count(' ') > 0:
-        await clear.run(message,client)
     
     elif inputText == "!help":
         await client.send_message(message.channel, on_message.__doc__)
@@ -242,9 +240,6 @@ async def on_message(message):
 
         if len(message.mentions) == 0:
             def quickSort(usersArr):
-                '''
-                Quicksort Implementation
-                '''
                 if len(usersArr)==0: return []
                 if len(usersArr)==1: return usersArr
                 left = [i for i in usersArr[1:] if i.swearCount > usersArr[0].swearCount]
@@ -297,26 +292,15 @@ async def on_message(message):
     elif inputText.startswith("!print"):
         await client.send_message(message.channel,wordFilter.printAll())
     
-    # Checks and filters messages
+    # Checks and classifiers messages
     # elif not currentUser.perms == "Seidelion":
     if not message.author.name =="Mr Seidel":
-        vulgar_confidence = filters.swears(inputText,baddiesList)
-        positivity_confidence = filters.polarity(inputText)
-
-        if positivity_confidence < 0:
+ 
+        cyberbullying_confidence = classifiers.isCyberbullying(inputText,baddiesList)
+        if cyberbullying_confidence > 0:
             currentUser.updateSwears()
-
-            confidence = -100*positivity_confidence
-            await client.send_message(message.channel, "Hey! Don't be such a downer! Confidence: %s %%" % confidence)
+            await client.send_message(message.channel, "Hey! Don't be such a downer! Confidence: %s %%" % cyberbullying_confidence)
             await client.send_message(reporting_channel, "!report %s" % message.id)
-        
-        elif vulgar_confidence == 1 and positivity_confidence <= 0.1:
-            currentUser.updateSwears()
-            await client.send_message(message.channel, "Hey! You can't send that message here!")
-            await client.send_message(reporting_channel, "!report %s" % message.id)
-
-        if positivity_confidence > 0.6:
-            filters.qClassifier_train(inputText,'pos')
 
     # Classification Feedback Mechanism
     if message.author.id == "495274911795773441" and message.channel.id == admin_channel.id and len(message.embeds) > 0:
@@ -343,13 +327,13 @@ async def on_message(message):
                 await client.delete_message(tempMsg)
 
                 # Train Classifier
-                filters.qClassifier_train(tempContent,'neg')
+                classifiers.qClassifier_train(tempContent,'neg')
 
             elif res.reaction.emoji == '👎':
                 tempContent = message.embeds[0]['fields'][1]["value"]
 
                 # Train Classifier
-                filters.qClassifier_train(tempContent,'pos')
+                classifiers.qClassifier_train(tempContent,'pos')
 
     if inputText.startswith("!report") and inputText.count(' ') > 0:
         if "Seidelion" in [y.name for y in message.author.roles]:

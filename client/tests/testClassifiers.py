@@ -1,9 +1,9 @@
 import unittest
-from client.functions.filters import run, baddiesBasic
+from client.classifiers.classifiers import run, baddiesBasic
 
-class TestFilters(unittest.TestCase):
+class TestClassifiers(unittest.TestCase):
     '''
-    Tests to see if the filter works
+    Tests to see if the classifier works
     '''
     def test_range(self):
         # 1 = Contains Swear Word

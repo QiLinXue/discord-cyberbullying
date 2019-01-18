@@ -1,14 +1,14 @@
 import unittest
 
 # Import Test Modules
-from client.tests import testClear, testFilters
+from client.tests import testClassifiers
 
 # Combine all tests and run
 if __name__ == '__main__':
 
     # Select classes to Run
-    test_classes_to_run = [testClear.TestClear,
-                           testFilters.TestFilters
+    test_classes_to_run = [
+                           testClassifiers.TestClassifiers
                           ]
 
     # Load the tests
