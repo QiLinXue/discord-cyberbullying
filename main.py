@@ -40,7 +40,6 @@ async def on_message(message):
     `!add [str]`: adds the string to the list of bad words
     `!delete [str]`: deletes the string from the list of bad words
     `!print`: sends out the current bad words
-    `!ping`: sends message confirming on_message is successfully run
     `!names`: list out all users who have sent at least 1 message
     `!swears`: list out swears for all users
     `!swears [user object]`: list out swears for that user
@@ -120,7 +119,7 @@ async def on_message(message):
             reporting_channel = discord.Object(id=channel.id)
 
     hasNoChannel = admin_channel == -1 or reporting_channel == -1
-    isCommand = inputText.startswith("1") and not inputText == "!setup"
+    isCommand = inputText.startswith("!") and not inputText == "!setup"
     if hasNoChannel and isCommand:
         await client.send_message(message.channel,"The channels 'administration' and/or 'reporting' are not found. Please initialize setup by typing `!setup`")
 
@@ -179,10 +178,6 @@ async def on_message(message):
             #     await client.send_message(message.channel, "Oh no! Something went horrendously wrong.")
         else:
             await client.send_message(message.channel,"Server is already set up")
-   
-    # Basic Ping for troubleshooting
-    elif inputText.startswith("!ping"):
-        await client.send_message(message.channel, ":ping_pong: pong!")
     
     elif inputText == "!help":
         await client.send_message(message.channel, on_message.__doc__)

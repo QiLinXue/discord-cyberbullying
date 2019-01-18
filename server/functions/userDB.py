@@ -4,7 +4,7 @@ class UserDB():
 
     def __init__(self,host,user,password,database):
         '''
-		Constructor to build the bad words object
+		Constructor to build the user database object
 
 		Parameters
 		----------
