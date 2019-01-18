@@ -39,9 +39,6 @@ class BadWordsDB():
     ----------
     '''
 
-    # Import database username and password
-    from serverSetup import DBUSER,DBPASS
-
     def __init__(self,host,user,password,database):
         '''
 		Constructor to build the bad words object

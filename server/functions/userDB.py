@@ -1,7 +1,6 @@
 import mysql.connector
 
 class UserDB():
-    from serverSetup import DBUSER,DBPASS
 
     def __init__(self,host,user,password,database):
         '''
@@ -138,7 +137,6 @@ class UserDB():
         self.connect()
 
         sqlFormula = "UPDATE userList SET perms = '%s' WHERE userID = %s" % (role,user.id)
-        print(sqlFormula)
         self.cursor.execute(sqlFormula)
         self.mydb.commit()
         self.close()

@@ -7,66 +7,15 @@
 # Created:     31-Sep-2018
 # Updated:     17-Jan-2019
 #-----------------------------------------------------------------------------
-
 # pylint: disable=W0614
 
-# File Setup
-from botSetup import *
-
-TOKEN = os.getenv('TOKEN')
-
-from serverSetup import DBUSER,DBPASS
-
-# Imports
+from serverSetup import *
 from client.imports import * # client imports
 from server.imports import * # server imports
-
 import discord
-
 import time
-# -------------------------------
-# ------- Initialization --------
-# -------------------------------
 
 print("Starting up...") # Notify file was run
-wordFilter = badWords.BadWordsDB("us-cdbr-iron-east-01.cleardb.net",DBUSER,DBPASS,"heroku_5e695080c7ef107") # Initialize Variables
-baddiesList = wordFilter.fetch() # Intialize Baddies List
-
-# for i in filters.baddiesFull:
-#     wordFilter.insert(i,baddiesList)
-#     print(i)
-# -------------------------------
-# -------- Class Setup ----------
-# -------------------------------
-
-users = []
-userIDs = []
-
-
-
-userDatabase = userDB.UserDB("us-cdbr-iron-east-01.cleardb.net",DBUSER,DBPASS,"heroku_5e695080c7ef107")
-
-for u in userDatabase.fetch():
-    if u[4] == "Seidelion":
-        users.append(seidelions.Seidelion(u[0],u[1],userDatabase,u[2],"Seidelion",0))
-    else:
-        users.append(user.User(u[0],u[1],userDatabase,u[2],"User"))
-
-    userIDs.append(u[0])
-
-'''
-Implement Insertion Sort to sort users by id, allowing easy id lookup after
-'''
-for i in range(1,len(userIDs)):
-
-    currentvalue_id, currentvalue_user = userIDs[i], users[i]
-    pos = i
-
-    while pos > 0 and userIDs[pos - 1] > currentvalue_id:
-        users[pos], userIDs[pos] = users[pos-1], userIDs[pos-1]
-        pos -= 1
-
-    users[pos], userIDs[pos] = currentvalue_user, currentvalue_id
 
 @client.event
 async def on_ready():
@@ -77,11 +26,10 @@ async def on_ready():
     await client.change_presence(game=discord.Game(name='with your grades bwahahaha'))
     print("Bot is online")
 
-# -------------------------------
-# -------- Functions ------------
-# -------------------------------
+
 admin_channel = discord.Object(id='517393346432335872')
 reporting_channel = discord.Object(id="524369729796833280")
+
 @client.event
 async def on_message(message):
     '''
@@ -104,17 +52,17 @@ async def on_message(message):
     ..note:: The function also constantly looks for bad words contained within message,
                 outputs a message if it violates the conditions
     '''
-    # -------------------------------
-    # ---------- Setup --------------
-    # -------------------------------
 
     global baddiesList
     global users
     global admin_channel
+    global users, userIDs
 
-    inputText = message.content # The Message Sent (str)
+    '''
+    Update database if it's a new user
+    '''
     if str(message.author.id) not in userIDs:
-        if "seidelion" in [y.name.lower() for y in message.author.roles]:
+        if "Seidelion" in [y.name for y in message.author.roles]:
             newUser = seidelions.Seidelion(str(message.author.id),str(message.author),userDatabase,0,"Seidelion",0)
         else:
             newUser = user.User(str(message.author.id),str(message.author),userDatabase,0,"User")
@@ -122,18 +70,18 @@ async def on_message(message):
         userIDs.append(str(message.author.id))
         newUser.insert()
 
-
-    currentUser = users[userIDs.index(message.author.id)]
-    # -------------------------------
-    # ------- Experimental ----------
-    # -------------------------------
-
     '''
-    Binary Search to get index of mentioned user in the "users" array
+    Predefine commonly used values to increase reusability
     '''
+    inputText = message.content # Text of the message
+    currentUser = users[userIDs.index(message.author.id)] # The current user typing
+    mentionedUser_index = -1 # The index of the user mentioned
     if len(message.mentions) > 0:
 
         def binarySearch(idList,idToFind): 
+            '''
+            Binary Search to get index of mentioned user in the "users" array
+            '''
             first = 0
             last = len(idList) - 1
             while first <= last: 
@@ -148,22 +96,71 @@ async def on_message(message):
         
                 else:
                     last = mid - 1
-            
+
             return -1
-        
+
         mentionedUser_index = binarySearch(userIDs,message.mentions[0].id)
 
+    '''
+    Functions relating to users
+    '''
     if inputText.startswith("!names"):
         for u in users:
             await client.send_message(message.channel, u.display())
 
-    if inputText.startswith("!swears"):
-        if len(message.mentions) == 0:
+    # Add / Remove roles
+    if inputText.startswith("!role"):
+        isCorrectFormat = inputText.count(' ') == 2 and len(message.mentions) == 1
+        isRealRole = inputText.split()[2] in [y.name for y in message.server.roles]
+        hasPermissions = currentUser.perms == "Seidelion"
 
-            '''
-            Quicksort Implementation
-            '''
+        # Add Roles
+        if inputText.startswith("!roleAdd") and isCorrectFormat and isRealRole and hasPermissions:
+            tempUser = message.server.get_member(message.mentions[0].id)
+            role = message.server.roles[([y.name for y in message.server.roles].index(inputText.split()[2]))]
+            try:
+                await client.add_roles(tempUser, role)
+                await client.send_message(message.channel, "Successfully assigned role %s to %s" % (role, tempUser))
+
+                if inputText.split()[2] == "Seidelion":
+                    tempUserObject = users[mentionedUser_index]
+                    tempUserObject.updateRole("Seidelion")
+
+                    users[mentionedUser_index] = seidelions.Seidelion(tempUserObject.id,tempUserObject.name,userDatabase,tempUserObject.swearCount,"Seidelion",0)
+            except Exception as e:
+                print(e)
+                await client.send_message(message.channel, "Oh No! Something went wrong!")
+
+        # Remove Role
+        elif inputText.startswith("!roleRemove") and isCorrectFormat and isRealRole and hasPermissions:
+            tempUser = message.server.get_member(message.mentions[0].id)
+            role = message.server.roles[([y.name for y in message.server.roles].index(inputText.split()[2]))]
+            try:
+                await client.remove_roles(tempUser, role)
+                await client.send_message(message.channel, "Successfully removed role %s from %s" % (role, tempUser))
+
+                if inputText.split()[2] == "Seidelion":
+                    tempUserObject = users[mentionedUser_index]
+                    tempUserObject.updateRole("User")
+                    users[mentionedUser_index] = user.User(tempUserObject.id,tempUserObject.name,userDatabase,tempUserObject.swearCount,"User")
+            except Exception as e:
+                print(e)
+                await client.send_message(message.channel, "Oh No! Something went wrong!")
+
+        if not hasPermissions:
+            await client.send_message(message.channel, "You don't have the permissions to do that!")
+        if not isCorrectFormat:
+            await client.send_message(message.channel, "There's a problem with your input. Please make sure it's `!roleAdd/roleRemove @user rolename`")
+        if not isRealRole:
+                await client.send_message(message.channel, "That's not a real role!")
+
+    elif inputText.startswith("!swears"):
+
+        if len(message.mentions) == 0:
             def quickSort(usersArr):
+                '''
+                Quicksort Implementation
+                '''
                 if len(usersArr)==0: return []
                 if len(usersArr)==1: return usersArr
                 left = [i for i in usersArr[1:] if i.swearCount > usersArr[0].swearCount]
@@ -181,87 +178,43 @@ async def on_message(message):
             except(ValueError):
                 await client.send_message(message.channel,"This user does not exist")
     
-    if inputText.startswith("!report") and inputText.count(' ') > 0:
-        if "seidelion" in [y.name.lower() for y in message.author.roles]:
-            reportID = inputText.split(' ', 1)[1]
-            reportMessage = None
-            for channel in client.get_all_channels():
-                try:
-                    reportMessage = await client.get_message(channel,reportID)
-                except:
-                    continue
-            await client.send_message(admin_channel,embed=currentUser.report(reportID,reportMessage))
-    # -------------------------------
-    # -------- Work Things ----------
-    # -------------------------------
+    '''
+    Functions relating to Cyberbullying Reporting
+    '''
 
-    # Add Role
-    # NOTE clean this part up LOL
-    elif inputText.startswith("!addRole") and inputText.count(' ') == 2:
+    # Prints the bad word list
+    if inputText.startswith("!print"):
+        await client.send_message(message.channel,wordFilter.printAll())
 
-        if len(message.mentions) == 1 and inputText.split()[2].lower() in [y.name.lower() for y in message.server.roles]:
-            tempUser = message.server.get_member(message.mentions[0].id)
-            role = message.server.roles[([y.name.lower() for y in message.server.roles].index(inputText.split()[2].lower()))]
-            await client.add_roles(tempUser, role)
-            await client.send_message(message.channel, "Successfully assigned role %s to %s" % (role, tempUser))
+    if currentUser.perms == "Seidelion":
+        # Add Bad Words
+        if inputText.startswith("!add ") and inputText.count(' ') > 0:
+            mes = inputText.split()[1]
+            if mes in baddiesList:
+                await client.send_message(message.channel, "Word already added")
+            else:
+                wordFilter.insert(mes,baddiesList) # Run and get status
+                await client.send_message(message.channel, "Successfully added %s to database" % mes)
+                baddiesList.append(mes)
 
-            if inputText.split()[2] == "Seidelion":
-                tempUserObject = users[mentionedUser_index]
-                tempUserObject.updateRole("Seidelion")
+        # Remove Bad Words
+        elif inputText.startswith("!delete") and inputText.count(' ') > 0:
+            mes = inputText.split()[1]
 
-                users[mentionedUser_index] = seidelions.Seidelion(tempUserObject.id,tempUserObject.name,userDatabase,tempUserObject.swearCount,"Seidelion",0)
-        else:
-            await client.send_message(message.channel, "There's a problem with your input. Please make sure it's `!addRole @user rolename`")
-
-    # Remove Role
-    elif inputText.startswith("!removeRole") and inputText.count(' ') == 2:
-
-        if len(message.mentions) == 1 and inputText.split()[2].lower() in [y.name.lower() for y in message.server.roles]:
-            tempUser = message.server.get_member(message.mentions[0].id)
-            role = message.server.roles[([y.name.lower() for y in message.server.roles].index(inputText.split()[2].lower()))]
-            await client.remove_roles(tempUser, role)
-            await client.send_message(message.channel, "Successfully removed role %s from %s" % (role, tempUser))
-
-            if inputText.split()[2] == "Seidelion":
-                tempUserObject = users[mentionedUser_index]
-                tempUserObject.updateRole("User")
-
-                users[mentionedUser_index] = user.User(tempUserObject.id,tempUserObject.name,userDatabase,tempUserObject.swearCount,"User")
-        else:
-            await client.send_message(message.channel, "There's a problem with your input. Please make sure it's `!removeRole @user rolename`")
-
-    # Clears Messages
-    elif inputText.startswith("!clear") and inputText.count(' ') > 0:
-        await clear.run(message,client)
-    
-    # Add Bad Words
-    elif inputText.startswith("!add") and inputText.count(' ') > 0:
-        mes = inputText.split(' ', 1)[1]
-        if mes in baddiesList:
-            await client.send_message(message.channel, "Word already added")
-        else:
-            wordFilter.insert(mes,baddiesList) # Run and get status
-            await client.send_message(message.channel, "Successfully added %s to database" % mes)
-            baddiesList.append(mes)
-
-    # Remove Bad Words
-    elif inputText.startswith("!delete") and inputText.count(' ') > 0:
-        mes = inputText.split(' ', 1)[1]
-
-        if mes in baddiesList:
-            wordFilter.delete(mes)
-            await client.send_message(message.channel, "Successfully deleted %s from database" % mes)
-            baddiesList = wordFilter.fetch()
-        else:
-            await client.send_message(message.channel, "You silly. %s is not even a banned word!" % mes)
+            if mes in baddiesList:
+                wordFilter.delete(mes)
+                await client.send_message(message.channel, "Successfully deleted %s from database" % mes)
+                baddiesList = wordFilter.fetch()
+            else:
+                await client.send_message(message.channel, "You silly. %s is not even a banned word!" % mes)
 
     # Print Bad Words
     elif inputText.startswith("!print"):
         await client.send_message(message.channel,wordFilter.printAll())
     
-    # Filters Messages
+    # Checks and filters messages
     # elif not currentUser.perms == "Seidelion":
-    elif not message.author.name =="Mr Seidel": # TODO switch to id
+    if not message.author.name =="Mr Seidel":
         vulgar_confidence = filters.swears(inputText,baddiesList)
         positivity_confidence = filters.polarity(inputText)
 
@@ -271,20 +224,17 @@ async def on_message(message):
             confidence = -100*positivity_confidence
             await client.send_message(message.channel, "Hey! Don't be such a downer! Confidence: %s %%" % confidence)
             await client.send_message(reporting_channel, "!report %s" % message.id)
-            # await client.send_message(discord.utils.get())
         
         elif vulgar_confidence == 1 and positivity_confidence <= 0.1:
             currentUser.updateSwears()
             await client.send_message(message.channel, "Hey! You can't send that message here!")
             await client.send_message(reporting_channel, "!report %s" % message.id)
-            # await client.send_message(discord.utils.get())
 
         if positivity_confidence > 0.6:
             filters.qClassifier_train(inputText,'pos')
 
-        print(positivity_confidence)
-
-    if message.author.name == "Mr Seidel" and message.channel.id == admin_channel.id:
+    # Classification Feedback Mechanism
+    if message.author.id == "495274911795773441" and message.channel.id == admin_channel.id and len(message.embeds) > 0:
         reactions = ['👍','👎']
         for emoji in reactions:
             await client.add_reaction(message,emoji)
@@ -295,7 +245,7 @@ async def on_message(message):
             res = await client.wait_for_reaction(emoji=None, message=message)
 
             if res.user.id == "495274911795773441": # Prevents time delay glitch where bot recognizes own reaction
-                print("intruder detected!")
+                continue
 
             elif res.reaction.emoji == '👍':
                 tempMesID = message.embeds[0]['fields'][0]["value"]
@@ -316,9 +266,17 @@ async def on_message(message):
                 # Train Classifier
                 filters.qClassifier_train(tempContent,'pos')
 
+    '''
+    Administrative Functions
+    '''
+    # Basic Ping for troubleshooting
     if inputText.startswith("!ping"):
         await client.send_message(message.channel, ":ping_pong: pong!")
 
+    # Clears Messages
+    elif inputText.startswith("!clear") and inputText.count(' ') > 0:
+        await clear.run(message,client)
+    
 # async def on_reaction_add(reaction,user):
 #     print(reaction)
 # Run the Bot
