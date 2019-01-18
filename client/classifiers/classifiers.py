@@ -53,8 +53,8 @@ def swearClassifier_classify(phrase,baddies):
     Returns
     -------
     int
-        0 if there are no bad words
-        1 if there are bad words
+        -1 if there are no bad words
+        1  if there are bad words
     '''
     for word in phrase.split():
         if word.lower() in baddies:
@@ -67,6 +67,10 @@ Custom Classifier
 '''
 
 def qClassifier_init():
+    '''
+    Initialization of the custom classifier and save it as a pickle file
+    '''
+
     train = [
         ('I love this sandwich.', 'pos'),
         ('this is an amazing place!', 'pos'),
@@ -84,12 +88,38 @@ def qClassifier_init():
     qClassifier_f.close()
 
 def qClassifier_classify(phrase):
+    '''
+    classify text by reading from the pickle file
+
+    Parameters
+    ---------
+    phrase: str
+        the text to be checked for
+    
+    Returns
+    -------
+    float
+        any float between 0 and 1
+        0 if positive
+        1 if negative
+    '''
+
     qClassifier_f = open('client/classifiers/qClassifier.pickle','rb')
     qClassifier = pickle.load(qClassifier_f)
     qClassifier_f.close()
     return qClassifier.prob_classify(phrase).prob("neg")
 
 def qClassifier_train(phrase,sentiment):
+    '''
+    Train the classifier from labelled data
+
+    Parameters
+    ----------
+    phrase: str
+        the phrase to be trained for
+    sentiment: str
+        either "pos" or "neg", the corresponding classification to the phrase
+    '''
     qClassifier_f = open('client/classifiers/qClassifier.pickle','rb')
     qClassifier = pickle.load(qClassifier_f)
     qClassifier_f.close()
@@ -106,10 +136,26 @@ Combined Classifier
 '''
 
 def isCyberbullying(phrase,baddiesList):
+    '''Combined classifier using results from other classifiers
+    
+    Arguments:
+    phrase: str
+        the phrase to check for cyberbullying
+    baddiesList: str[]
+        the list of banned profanity words
+    
+    Returns
+    -------
+    float
+        can be any float between 0 and 1
+        0: not cyberbullying
+        1: cyberbullying
+    '''
+
     vulgar_confidence = swearClassifier_classify(phrase,baddiesList)
     positivity_confidence = textblobClassifier_classify(phrase)
     qClassifier_confidence = qClassifier_classify(phrase)
-    confidence = -999
+    confidence = 0
 
     if positivity_confidence > 0:
         confidence = 100*positivity_confidence

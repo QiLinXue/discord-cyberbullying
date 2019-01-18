@@ -13,7 +13,6 @@ from serverSetup import *
 from client.imports import * # client imports
 from server.imports import * # server imports
 import discord
-import time
 
 print("Starting up...") # Notify file was run
 
@@ -33,24 +32,22 @@ reporting_channel = -1
 @client.event
 async def on_message(message):
     '''
-    Welcome to the Cyberbullying Detection and Assistance Tool. If this is your first
-    Asynchronous function that performs several functions based off of the input message
-    Reference: https://discordpy.readthedocs.io/en/latest/api.html#discord.on_message
+    Welcome to the Cyberbullying Detection and Assistance Tool. If you just got started, type `!setup` to initialize the server.
 
     Commands
     --------
-    !trump [str]: fun command that returns how similar a string is to trump's tweets
-    !add [str]: adds the string to the list of bad words
-    !delete [str]: deletes the string from the list of bad words
-    !print: sends out the current bad words
-    !ping: sends message confirming on_message is successfully run
-    !names: list out all names
-    !swears: list out swears for current user
-    !swears [user object]: list out swears for that user
-    !report: reports a message
-
-    ..note:: The function also constantly looks for bad words contained within message,
-                outputs a message if it violates the conditions
+    `!setup`: creates necessary channels, roles, and 
+    `!add [str]`: adds the string to the list of bad words
+    `!delete [str]`: deletes the string from the list of bad words
+    `!print`: sends out the current bad words
+    `!ping`: sends message confirming on_message is successfully run
+    `!names`: list out all users who have sent at least 1 message
+    `!swears`: list out swears for all users
+    `!swears [user object]`: list out swears for that user
+    `!report [message id]`: reports a message
+    `!roleAdd [user] [role]`: adds a role to the user
+    `!roleDelete [user] [role]`: deletes a role from the user
+    `!help`: displays this message
     '''
 
     global baddiesList
@@ -79,9 +76,23 @@ async def on_message(message):
     if len(message.mentions) > 0:
 
         def binarySearch(idList,idToFind): 
+            '''Binary Search to get index of mentioned user in the "users" array
+            
+            Parameters
+            ----------
+            idList: int[]
+                the list of ids
+            
+            idToFind: int
+                the id to be found
+
+            Returns
+            -------
+            int:
+                the index of the mentioned user
+                -1 if not found
             '''
-            Binary Search to get index of mentioned user in the "users" array
-            '''
+
             first = 0
             last = len(idList) - 1
             while first <= last: 
@@ -112,10 +123,6 @@ async def on_message(message):
     isCommand = inputText.startswith("1") and not inputText == "!setup"
     if hasNoChannel and isCommand:
         await client.send_message(message.channel,"The channels 'administration' and/or 'reporting' are not found. Please initialize setup by typing `!setup`")
-
-    '''
-    Experimental (testing)
-    '''
 
     '''
     Administrative Functions
@@ -171,7 +178,7 @@ async def on_message(message):
             #     print(e)
             #     await client.send_message(message.channel, "Oh no! Something went horrendously wrong.")
         else:
-            await client.send_message("Server is already set up")
+            await client.send_message(message.channel,"Server is already set up")
    
     # Basic Ping for troubleshooting
     elif inputText.startswith("!ping"):
@@ -240,6 +247,17 @@ async def on_message(message):
 
         if len(message.mentions) == 0:
             def quickSort(usersArr):
+                '''Recursive quicksort to sort the users by swears
+                
+                Paramters
+                ---------
+                usersArr: users[]
+                    the user array
+                
+                Returns:
+                    users[]: a sorted user array
+                '''
+
                 if len(usersArr)==0: return []
                 if len(usersArr)==1: return usersArr
                 left = [i for i in usersArr[1:] if i.swearCount > usersArr[0].swearCount]
@@ -308,8 +326,6 @@ async def on_message(message):
         for emoji in reactions:
             await client.add_reaction(message,emoji)
 
-        time.sleep(2) # Wait for emojis to add
-
         searching_for_a_meaning_in_life = True
         while searching_for_a_meaning_in_life:
             res = await client.wait_for_reaction(emoji=None, message=message)
@@ -347,12 +363,5 @@ async def on_message(message):
                     continue
             await client.send_message(admin_channel,embed=currentUser.report(reportID,reportMessage))
 
-    # if inputText == "asidasidjh":
-    #     for i in message.server.channels:
-    #         if i.name == "administration" or i.name == "reporting":
-    #             await client.delete_channel(i)
-    #         print(i)
-# async def on_reaction_add(reaction,user):
-#     print(reaction)
 # Run the Bot
 client.run(TOKEN)
