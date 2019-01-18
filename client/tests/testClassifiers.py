@@ -1,5 +1,6 @@
 import unittest
-from client.classifiers.classifiers import run, baddiesBasic
+from client.classifiers.classifiers import swearClassifier_classify as run
+from client.classifiers.classifiers import baddiesBasic
 
 class TestClassifiers(unittest.TestCase):
     '''
@@ -13,5 +14,5 @@ class TestClassifiers(unittest.TestCase):
         self.assertEqual(run("YOU cUnT",baddiesBasic),1)
 
         # 0 = Doesn't Contain Swear Word
-        self.assertEqual(run("I have many assets",baddiesBasic),0)
-        self.assertEqual(run("\s",baddiesBasic),0) # pylint: disable=W1401
+        self.assertEqual(run("I have many assets",baddiesBasic),-1)
+        self.assertEqual(run("\s",baddiesBasic),-1) # pylint: disable=W1401
