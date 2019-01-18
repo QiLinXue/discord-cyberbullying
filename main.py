@@ -42,6 +42,8 @@ baddiesList = wordFilter.fetch() # Intialize Baddies List
 users = []
 userIDs = []
 
+
+
 userDatabase = userDB.UserDB("us-cdbr-iron-east-01.cleardb.net",DBUSER,DBPASS,"heroku_5e695080c7ef107")
 
 for u in userDatabase.fetch():
@@ -51,6 +53,20 @@ for u in userDatabase.fetch():
         users.append(user.User(u[0],u[1],userDatabase,u[2],"User"))
 
     userIDs.append(u[0])
+
+'''
+Implement Insertion Sort to sort users by id, allowing easy id lookup after
+'''
+for i in range(1,len(userIDs)):
+
+    currentvalue_id, currentvalue_user = userIDs[i], users[i]
+    pos = i
+
+    while pos > 0 and userIDs[pos - 1] > currentvalue_id:
+        users[pos], userIDs[pos] = users[pos-1], userIDs[pos-1]
+        pos -= 1
+
+    users[pos], userIDs[pos] = currentvalue_user, currentvalue_id
 
 @client.event
 async def on_ready():
@@ -112,6 +128,30 @@ async def on_message(message):
     # ------- Experimental ----------
     # -------------------------------
 
+    '''
+    Binary Search to get index of mentioned user in the "users" array
+    '''
+    if len(message.mentions) > 0:
+
+        def binarySearch(idList,idToFind): 
+            first = 0
+            last = len(idList) - 1
+            while first <= last: 
+        
+                mid = (first+last)//2
+
+                if idList[mid] == idToFind: 
+                    return mid 
+        
+                elif idList[mid] < idToFind: 
+                    first = mid + 1
+        
+                else:
+                    last = mid - 1
+            
+            return -1
+        
+        mentionedUser_index = binarySearch(userIDs,message.mentions[0].id)
 
     if inputText.startswith("!names"):
         for u in users:
@@ -136,7 +176,7 @@ async def on_message(message):
 
         else:
             try:
-                mentionedUser = users[userIDs.index(message.mentions[0].id)]
+                mentionedUser = users[mentionedUser_index]
                 await client.send_message(message.channel, mentionedUser.swearCount)
             except(ValueError):
                 await client.send_message(message.channel,"This user does not exist")
@@ -166,10 +206,10 @@ async def on_message(message):
             await client.send_message(message.channel, "Successfully assigned role %s to %s" % (role, tempUser))
 
             if inputText.split()[2] == "Seidelion":
-                tempUserObject = users[userIDs.index(message.mentions[0].id)]
+                tempUserObject = users[mentionedUser_index]
                 tempUserObject.updateRole("Seidelion")
 
-                users[userIDs.index(message.mentions[0].id)] = seidelions.Seidelion(tempUserObject.id,tempUserObject.name,userDatabase,tempUserObject.swearCount,"Seidelion",0)
+                users[mentionedUser_index] = seidelions.Seidelion(tempUserObject.id,tempUserObject.name,userDatabase,tempUserObject.swearCount,"Seidelion",0)
         else:
             await client.send_message(message.channel, "There's a problem with your input. Please make sure it's `!addRole @user rolename`")
 
@@ -183,10 +223,10 @@ async def on_message(message):
             await client.send_message(message.channel, "Successfully removed role %s from %s" % (role, tempUser))
 
             if inputText.split()[2] == "Seidelion":
-                tempUserObject = users[userIDs.index(message.mentions[0].id)]
+                tempUserObject = users[mentionedUser_index]
                 tempUserObject.updateRole("User")
 
-                a = users[userIDs.index(message.mentions[0].id)] = user.User(tempUserObject.id,tempUserObject.name,userDatabase,tempUserObject.swearCount,"User")
+                users[mentionedUser_index] = user.User(tempUserObject.id,tempUserObject.name,userDatabase,tempUserObject.swearCount,"User")
         else:
             await client.send_message(message.channel, "There's a problem with your input. Please make sure it's `!removeRole @user rolename`")
 
