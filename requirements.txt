@@ -1,5 +1,5 @@
 discord.py==0.16.12
 textblob==0.15.2
 discord==0.0.2
-python-dotenv==0.10.1
+python-dotenv==0.17.1
 mysql_connector_repackaged==0.3.1
